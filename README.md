@@ -114,7 +114,7 @@ In order to upload pictures, you should implement draft system for your model.
 
 
 ## How to contribute
-* You have find a bug ? You can open an issue
+* You have find a bug ? You can open an [issue](https://github.com/Romano83/CakePHP3-Media/issues/new)
 	* Clearly describe the issue including steps to reproduce when it is a bug.
 	* Make sure you fill in the earliest version that you know has the issue.
 	* Screenshots and code exemple are welcome in the issues.
