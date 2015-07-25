@@ -74,12 +74,12 @@ class PostsTable extends Table
 }
 ```
 For the path option, you have numerous parameters :
-* %y	Year
-* %m	Month
-* %f	Sluggified filename
-* %id	Media Id
-* %cid	Media Id /100
-* %mid	Media Id /1000
+* %y		Year
+* %m		Month
+* %f		Sluggified filename
+* %id		Media Id
+* %cid		Media Id /100
+* %mid		Media Id /1000
 
 ### Helper
 
