@@ -24,7 +24,7 @@ The aim of this plugin is to give you the ability to create and associate any ki
 ```
 composer require Romano83/CakePHP3-Media
 ```
-* Import The file `config\schema\media.sql` in your database or run 
+* Import The file `config\schema\medias.sql` in your database or run 
 ```
 bin/cake migrations migrate -p Media
 ```
