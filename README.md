@@ -124,5 +124,6 @@ In order to upload pictures, you should implement draft system for your model.
 	* Your PR should be on the `dev` branch.
 
 ## Special thanks
-	* [Grafikart](https://github.com/Grafikart) for the first version of this plugin !
+
+   * [Grafikart](https://github.com/Grafikart) for the first version of this plugin !
 
