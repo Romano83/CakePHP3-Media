@@ -22,7 +22,7 @@ The aim of this plugin is to give you the ability to create and associate any ki
 
 * Run :
 ```
-composer require Romano83/Media
+composer require Romano83/CakePHP3-Media
 ```
 * Import The file `config\schema\media.sql` in your database or run 
 ```
