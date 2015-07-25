@@ -1,0 +1,153 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright 2015 Romain GUILLEMIN <contact@romain-guillemin.fr>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CakePHP 3 - plugin Media\n"
+"POT-Creation-Date: 2015-07-12 13:37+0200\n"
+"PO-Revision-Date: 2015-07-12 13:37+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 1.8.2\n"
+
+#: Model/Table/MediasTable.php:71
+msgid "The model '{0}' doesn't have a 'Media' Behavior"
+msgstr "Le model '{0}' n'a pas le comportement 'Media'"
+
+#: Model/Table/MediasTable.php:149
+msgid "You don't have the permission to upload this filetype ({0} only)"
+msgstr "Vous n'avez pas la permission pour ajouter ce type de fichier (seulement {0})"
+
+#: Model/Table/MediasTable.php:155
+msgid "You can't send more than {0} files"
+msgstr "Vous ne pouvez pas envoyer plus de {0} fichiers"
+
+#: Model/Table/MediasTable.php:162
+msgid "The width is too big, it must be less than {0}px"
+msgstr "La largeur est trop importante, elle doit être inférieure à {0}px"
+
+#: Model/Table/MediasTable.php:165
+msgid "The height is too big, it must be less than {0}px"
+msgstr "La hauteur est trop importante, elle doit être inférieure à {0}px"
+
+#: Model/Table/MediasTable.php:171
+msgid "The file size is too big, {0}kb max"
+msgstr "Le fichier est trop volumineux, {0}kb maximum"
+
+#: Template/Medias/edit.ctp:7 Template/Medias/media.ctp:16
+msgid "Modify picture"
+msgstr "Modifier l'image"
+
+#: Template/Medias/edit.ctp:8
+msgid "Replace picture"
+msgstr "Remplacer l'image"
+
+#: Template/Medias/edit.ctp:14 Template/Medias/media.ctp:22
+#: Template/Medias/json/media.ctp:7
+msgid "Title"
+msgstr "Titre"
+
+#: Template/Medias/edit.ctp:18 Template/Medias/media.ctp:26
+#: Template/Medias/json/media.ctp:8
+msgid "Alt text"
+msgstr "Text alternatif"
+
+#: Template/Medias/edit.ctp:22 Template/Medias/media.ctp:30
+#: Template/Medias/json/media.ctp:10
+msgid "Caption"
+msgstr "Légende"
+
+#: Template/Medias/edit.ctp:26 Template/Medias/media.ctp:37
+#: Template/Medias/json/media.ctp:11
+msgid "Display settings"
+msgstr "Options d'affichage"
+
+#: Template/Medias/edit.ctp:28 Template/Medias/media.ctp:39
+#: Template/Medias/json/media.ctp:12
+msgid "Alignment"
+msgstr "Alignement"
+
+#: Template/Medias/edit.ctp:30 Template/Medias/media.ctp:43
+#: Template/Medias/json/media.ctp:15
+msgid "Left"
+msgstr "Gauche"
+
+#: Template/Medias/edit.ctp:31 Template/Medias/media.ctp:42
+#: Template/Medias/json/media.ctp:14
+msgid "Center"
+msgstr "Centre"
+
+#: Template/Medias/edit.ctp:32 Template/Medias/media.ctp:44
+#: Template/Medias/json/media.ctp:16
+msgid "Right"
+msgstr "Doite"
+
+#: Template/Medias/edit.ctp:33 Template/Medias/media.ctp:41
+#: Template/Medias/json/media.ctp:13
+msgid "None"
+msgstr "Aucun"
+
+#: Template/Medias/edit.ctp:43
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: Template/Medias/index.ctp:5
+msgid "Upload a new file"
+msgstr "Ajouter un nouveau fichier"
+
+#: Template/Medias/index.ctp:6
+msgid "Gallery"
+msgstr "Gallerie"
+
+#: Template/Medias/index.ctp:11;22
+msgid "Drop your files to upload"
+msgstr "Glissez/Déposez vos fichiers pour télécharger"
+
+#: Template/Medias/index.ctp:162
+msgid "Do you really want to delete this file ?"
+msgstr "Voulez-vous vraiment supprimer ce fichier ?"
+
+#: Template/Medias/media.ctp:8 Template/Medias/json/media.ctp:4
+msgid "About this file"
+msgstr "A propos du fichier"
+
+#: Template/Medias/media.ctp:17 Template/Medias/json/media.ctp:34
+msgid "Delete definitively"
+msgstr "Supprimer définitivement"
+
+#: Template/Medias/media.ctp:34 Template/Medias/json/media.ctp:9
+msgid "Target"
+msgstr "Cible"
+
+#: Template/Medias/media.ctp:52 Template/Medias/json/media.ctp:17
+msgid "Set as thumbnail"
+msgstr "Mettre à la une"
+
+#: Template/Medias/media.ctp:55 Template/Medias/json/media.ctp:18
+msgid "Insert into post"
+msgstr "Insérer dans l'article"
+
+#: Template/Medias/nobehavior.ctp:3
+msgid "Error"
+msgstr "Erreur"
+
+#: Template/Medias/nobehavior.ctp:4
+msgid "Table '{0}Table' doesn't have 'Media' behavior"
+msgstr "La table '{0}Table' n'a pas le comportement 'Media'"
+
+#~ msgid "Modify Picture"
+#~ msgstr "Modifier l'image"
+
+#~ msgid "The model '{0}' doesn't have a 'Media' Behaviour"
+#~ msgstr "Le model '{0}' n'a pas le comportement 'Media'"
+
+#~ msgid "Erreur"
+#~ msgstr "Erreur"
+
+#~ msgid "La Table {0}Table n'a pas le comportement Media"
+#~ msgstr "La Table {0}Table n'a pas le comportement Media"

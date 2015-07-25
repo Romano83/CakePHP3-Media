@@ -1,0 +1,155 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright 2015 Romain GUILLEMIN <contact@romain-guillemin.fr>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: CakePHP 3 - plugin Media\n"
+"POT-Creation-Date: 2015-07-12 13:04+0200\n"
+"PO-Revision-Date: 2015-07-12 13:04+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: Model/Table/MediasTable.php:71
+msgid "The model '{0}' doesn't have a 'Media' Behavior"
+msgstr ""
+
+#: Model/Table/MediasTable.php:149
+msgid "You don't have the permission to upload this filetype ({0} only)"
+msgstr ""
+
+#: Model/Table/MediasTable.php:155
+msgid "You can't send more than {0} files"
+msgstr ""
+
+#: Model/Table/MediasTable.php:162
+msgid "The width is too big, it must be less than {0}px"
+msgstr ""
+
+#: Model/Table/MediasTable.php:165
+msgid "The height is too big, it must be less than {0}px"
+msgstr ""
+
+#: Model/Table/MediasTable.php:171
+msgid "The file size is too big, {0}kb max"
+msgstr ""
+
+#: Template/Medias/edit.ctp:7
+#: Template/Medias/media.ctp:16
+msgid "Modify picture"
+msgstr ""
+
+#: Template/Medias/edit.ctp:8
+msgid "Replace picture"
+msgstr ""
+
+#: Template/Medias/edit.ctp:14
+#: Template/Medias/media.ctp:22
+#: Template/Medias/json/media.ctp:7
+msgid "Title"
+msgstr ""
+
+#: Template/Medias/edit.ctp:18
+#: Template/Medias/media.ctp:26
+#: Template/Medias/json/media.ctp:8
+msgid "Alt text"
+msgstr ""
+
+#: Template/Medias/edit.ctp:22
+#: Template/Medias/media.ctp:30
+#: Template/Medias/json/media.ctp:10
+msgid "Caption"
+msgstr ""
+
+#: Template/Medias/edit.ctp:26
+#: Template/Medias/media.ctp:37
+#: Template/Medias/json/media.ctp:11
+msgid "Display settings"
+msgstr ""
+
+#: Template/Medias/edit.ctp:28
+#: Template/Medias/media.ctp:39
+#: Template/Medias/json/media.ctp:12
+msgid "Alignment"
+msgstr ""
+
+#: Template/Medias/edit.ctp:30
+#: Template/Medias/media.ctp:43
+#: Template/Medias/json/media.ctp:15
+msgid "Left"
+msgstr ""
+
+#: Template/Medias/edit.ctp:31
+#: Template/Medias/media.ctp:42
+#: Template/Medias/json/media.ctp:14
+msgid "Center"
+msgstr ""
+
+#: Template/Medias/edit.ctp:32
+#: Template/Medias/media.ctp:44
+#: Template/Medias/json/media.ctp:16
+msgid "Right"
+msgstr ""
+
+#: Template/Medias/edit.ctp:33
+#: Template/Medias/media.ctp:41
+#: Template/Medias/json/media.ctp:13
+msgid "None"
+msgstr ""
+
+#: Template/Medias/edit.ctp:43
+msgid "Update"
+msgstr ""
+
+#: Template/Medias/index.ctp:5
+msgid "Upload a new file"
+msgstr ""
+
+#: Template/Medias/index.ctp:6
+msgid "Gallery"
+msgstr ""
+
+#: Template/Medias/index.ctp:11;22
+msgid "Drop your files to upload"
+msgstr ""
+
+#: Template/Medias/index.ctp:162
+msgid "Do you really want to delete this file ?"
+msgstr ""
+
+#: Template/Medias/media.ctp:8
+#: Template/Medias/json/media.ctp:4
+msgid "About this file"
+msgstr ""
+
+#: Template/Medias/media.ctp:17
+#: Template/Medias/json/media.ctp:34
+msgid "Delete definitively"
+msgstr ""
+
+#: Template/Medias/media.ctp:34
+#: Template/Medias/json/media.ctp:9
+msgid "Target"
+msgstr ""
+
+#: Template/Medias/media.ctp:52
+#: Template/Medias/json/media.ctp:17
+msgid "Set as thumbnail"
+msgstr ""
+
+#: Template/Medias/media.ctp:55
+#: Template/Medias/json/media.ctp:18
+msgid "Insert into post"
+msgstr ""
+
+#: Template/Medias/nobehavior.ctp:3
+msgid "Error"
+msgstr ""
+
+#: Template/Medias/nobehavior.ctp:4
+msgid "Table '{0}Table' doesn't have 'Media' behavior"
+msgstr ""

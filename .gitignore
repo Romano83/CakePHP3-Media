@@ -1,0 +1,6 @@
+/vendor/*
+/css/.sass-cache/*
+/css/config.rb
+/css/style.scss
+.buildpath
+.project
