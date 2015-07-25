@@ -22,9 +22,9 @@ The aim of this plugin is to give you the ability to create and associate any ki
 
 * Run :
 ```
-composer require Romano83/Media
+composer require Romano83/CakePHP3-Media
 ```
-* Import The file `config\schema\media.sql` in your database or run 
+* Import The file `config\schema\medias.sql` in your database or run 
 ```
 bin/cake migrations migrate -p Media
 ```
@@ -114,7 +114,7 @@ In order to upload pictures, you should implement draft system for your model.
 
 
 ## How to contribute
-* You have find a bug ? You can open an issue
+* You have find a bug ? You can open an [issue](https://github.com/Romano83/CakePHP3-Media/issues/new)
 	* Clearly describe the issue including steps to reproduce when it is a bug.
 	* Make sure you fill in the earliest version that you know has the issue.
 	* Screenshots and code exemple are welcome in the issues.
@@ -124,5 +124,6 @@ In order to upload pictures, you should implement draft system for your model.
 	* Your PR should be on the `dev` branch.
 
 ## Special thanks
-	* [Grafikart](https://github.com/Grafikart) for the first version of this plugin !
+
+   * [Grafikart](https://github.com/Grafikart) for the first version of this plugin !
 
