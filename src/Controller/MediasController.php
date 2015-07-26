@@ -33,9 +33,9 @@ class MediasController extends AppController
     {
         parent::beforeFilter($event);
         $this->layout = 'uploader';
-        $this->Auth->allow([
-            'index'
-        ]);
+        if(in_array('Security', $this->components()->loaded())){
+            $this->Security->config('unlockedActions', ['index', 'edit', 'upload', 'order', 'thumb', 'update', 'delete']);
+        }
     }
 
     /**

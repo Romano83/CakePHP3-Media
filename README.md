@@ -50,7 +50,7 @@ public function canUploadMedias($model, $id){
 ### Behavior
 
 To use this plugin, you must load the `MediaBehavior` in your tables. Form instance, if you want to manage medias for your posts :
-```
+```php
 <?php
 namespace MyApp\Model\Table;
 
@@ -85,12 +85,36 @@ For the path option, you have numerous parameters :
 
 In order to add media upload and edit capabilities in your views, you can use `MediaHelper`.
 
-For example, you can add an iframe to manage medias: 
+To do so, add in your `AppController` 
+```php
+<?php
+namespace App\Controller;
+
+class AppController extends Controller
+{
+	public $helpers = ['Media.Media'];
+}
 ```
+Or in your `AppView`
+```php
+<?php
+namespace App\View;
+
+class AppView extends View
+{
+	public function initialize()
+	{
+		$this->loadHelper( 'Media.Media' );
+	}
+}
+```
+
+For example, you can add an iframe to manage medias: 
+```php
 <?= $this->Media->iframe('Model', 'ID'); ?>
 ```
 Or you can add text editor (tinymce for instance) inside form :
-```
+```php
 <?= $this->Form->create(); ?>
 <?= $this->Media->tinymce($fieldname, 'Model', 'Id', array $options); ?>
 <?= $this->Form->end(); ?>
@@ -107,7 +131,6 @@ In order to upload pictures, you should implement draft system for your model.
 
 
 ## ToDo
-* Add CKEditor support in `MediaHelper`;
 * Add the ability to edit a media when clicked;
 * Add resize, crop, flip and rotate functions;
 * Finish unit test...

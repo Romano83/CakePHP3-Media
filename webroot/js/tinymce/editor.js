@@ -25,12 +25,7 @@ jQuery(function($){
 		    gallery_explorer: $('#explorer').val() + '?editor=tinymce&id=' + $(this).attr('id'),
 		    gallery_edit: $('#edit').val() + '?editor=tinymce&id=' + $(this).attr('id'),
 		    autoresize_max_height: 700,
-
-			setup: function(editor) {
-			    editor.on('change', function(e) {			    	
-			        console.log('change event', e.originalEvent);
-			    });
-			}
+		
 		});		
 	});	
 });
