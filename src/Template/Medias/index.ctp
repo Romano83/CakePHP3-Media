@@ -71,7 +71,7 @@
 	
 	// Dropzone
 	var drop = $("body").dropzone({
-		url: "<?= Router::url(['controller'=>'medias','action'=>'upload',$ref,$ref_id,'?' => [ "id" => $id, 'editor'=>$editor, ] ]); ?>",
+		url: "<?= Router::url(['controller'=>'medias','action'=>'upload',$ref,$refId,'?' => [ "id" => $id, 'editor'=>$editor, ] ]); ?>",
 		//acceptedFiles: ".<?= implode(';.', $extensions); ?>",
 		clickable: "#browse",
 		previewTemplate: false,

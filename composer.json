@@ -35,10 +35,13 @@
 			"role" : "Initial Author"
 		}
 	],
-	"license" : "MIT",
 	"keywords" : [
 		"Plugin",
 		"Media",
 		"CakePHP"
-	]
+	],
+	"support" : {
+		"source" : "https://github.com/Romano83/CakePHP3-Media",
+		"issues" : "https://github.com/Romano83/CakePHP3-Media/issues"
+	}
 }

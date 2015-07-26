@@ -51,7 +51,7 @@ class MediasController extends AppController
             throw new ForbiddenException();
         }
         $this->loadModel($ref);
-        $this->set(compact('ref', 'ref_id'));
+        $this->set(compact('ref', 'refId'));
         if (! in_array('Media', $this->$ref->Behaviors()->loaded())) {
             return $this->render('nobehavior');
         }
