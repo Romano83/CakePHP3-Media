@@ -38,7 +38,7 @@ In your `config\bootstrap.php` file, add this line `Plugin::load('Media', ['boot
 
 By default, the plugin is blocked for everyone. To set proper permissions, you can implement *canUploadMedia()* method in your `YourApp\AppController`.
 For exemple :
-```
+```php
 public function canUploadMedias($model, $id){
 	if($model === 'YourApp\Model\Table\UsersTable' && $id == $this->Auth->user('id')){
 		return true; // Everyone can upload medias for their own records
