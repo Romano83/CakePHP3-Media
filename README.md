@@ -9,7 +9,7 @@ The aim of this plugin is to give you the ability to create and associate any ki
 
 * BelongsTo and hasMany Media association for you model;
 * Upload using drag & drop based on [dropzone.js](https://github.com/enyo/dropzone/);
-* Image uploader integrated with [tinymce 4.2](https://github.com/tinymce/tinymce)
+* Image uploader integrated with [tinymce 4.2](https://github.com/tinymce/tinymce) and [CKEditor 4.5](https://github.com/ckeditor/ckeditor-dev)
 
 
 ## Installation
