@@ -20,7 +20,9 @@
 	},
 	"autoload-dev" : {
 		"psr-4" : {
-			"Media\\Test\\" : "tests"
+			"Media\\Test\\" : "tests",
+			"Media\\Test\\Fixture\\" : "tests/Fixture",
+			"Cake\\Test\\" : "./vendor/cakephp/cakephp/tests"
 		}
 	},
 	"authors" : [{

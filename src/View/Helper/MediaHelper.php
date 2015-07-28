@@ -32,6 +32,7 @@ class MediaHelper extends Helper
     }
 
     /**
+     * 
      * @param string $fieldName
      * @param \Cake\ORM\Entity $ref
      * @param int $refId
@@ -50,6 +51,23 @@ class MediaHelper extends Helper
     }
 
     /**
+     * 
+     * @param string $fieldName
+     * @param \Cake\ORM\Entity $ref
+     * @param int $refId
+     * @param array $options
+     * @return string
+     */
+    public function ckeditor($fieldName, $ref, $refId, array $options = [])
+    {
+        $this->Html->script('/media/js/ckeditor/ckeditor.js', [
+            'block' => true
+        ]);
+        return $this->textarea($fieldName, $ref, $refId, 'ckeditor', $options);
+    }
+
+    /**
+     * 
      * @param string $fieldName
      * @param \Cake\ORM\Entity $ref
      * @param int $refId
