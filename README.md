@@ -24,15 +24,15 @@ The aim of this plugin is to give you the ability to create and associate any ki
 ```
 composer require romano83/cakephp3-media
 ```
-* Import The file `config\schema\medias.sql` in your database or run 
-```
-bin/cake migrations migrate -p Media
-```
+* Import The file `config\schema\medias.sql` in your database
 
 
 ## How to use
 
-In your `config\bootstrap.php` file, add this line `Plugin::load('Media', ['bootstrap' => false, 'routes' => true]);` or uncomment `Plugin::loadAll()`.
+In your `config\bootstrap.php` file, add this line 
+```php
+Plugin::load('Media', ['bootstrap' => false, 'routes' => true]);
+``` 
 
 ### Security purpose
 
@@ -61,7 +61,7 @@ class PostsTable extends Table
 	public function initialize(array $config)
 	{
 		$this->addBehavior(
-			'Media.Media' => [
+			'Media.Media', [
 				'path' => 'img/upload/%y/%m/%f', 	// default upload path relative to webroot folder (see below for path parameters)
 				'extensions' => ['jpg', 'png'],  	// array of authorized extensions (lowercase)
 				'limit' => 0,						// limit number of upload file. Default: 0 (no limit)
@@ -127,7 +127,7 @@ If you want to add thumb for your posts, you must add `media_id` field in your '
 
 #### Notice
 
-In order to upload pictures, you should implement draft system for your model.
+In order to upload pictures, you should implement **draft system** for your model.
 
 
 ## ToDo
