@@ -9,7 +9,7 @@ The aim of this plugin is to give you the ability to create and associate any ki
 
 * BelongsTo and hasMany Media association for you model;
 * Upload using drag & drop based on [dropzone.js](https://github.com/enyo/dropzone/);
-* Image uploader integrated with [tinymce 4.2](https://github.com/tinymce/tinymce)
+* Image uploader integrated with [tinymce 4.2](https://github.com/tinymce/tinymce) and [CKEditor 4.5](https://github.com/ckeditor/ckeditor-dev)
 
 
 ## Installation
@@ -38,7 +38,7 @@ In your `config\bootstrap.php` file, add this line `Plugin::load('Media', ['boot
 
 By default, the plugin is blocked for everyone. To set proper permissions, you can implement *canUploadMedia()* method in your `YourApp\AppController`.
 For exemple :
-```
+```php
 public function canUploadMedias($model, $id){
 	if($model === 'YourApp\Model\Table\UsersTable' && $id == $this->Auth->user('id')){
 		return true; // Everyone can upload medias for their own records
@@ -60,7 +60,7 @@ class PostsTable extends Table
 {
 	public function initialize(array $config)
 	{
-		$this->addBehavior([
+		$this->addBehavior(
 			'Media.Media' => [
 				'path' => 'img/upload/%y/%m/%f', 	// default upload path relative to webroot folder (see below for path parameters)
 				'extensions' => ['jpg', 'png'],  	// array of authorized extensions (lowercase)
@@ -69,7 +69,7 @@ class PostsTable extends Table
 				'max_height' => 0,					// maximum authorized height for uploaded pictures. Default: 0 (no limitation)
 				'size' => 0							// maximum autorized size for uploaded pictures (in kb). Default: 0 (no limitation)
 			]
-		]);
+		);
 	}
 }
 ```
