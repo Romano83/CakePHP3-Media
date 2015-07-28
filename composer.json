@@ -15,7 +15,7 @@
 	},
 	"autoload" : {
 		"psr-4" : {
-			"Media\\" : "src"
+			"Romano83\\Cakephp3Media\\" : "src"
 		}
 	},
 	"autoload-dev" : {
