@@ -60,7 +60,7 @@ class PostsTable extends Table
 {
 	public function initialize(array $config)
 	{
-		$this->addBehavior([
+		$this->addBehavior(
 			'Media.Media' => [
 				'path' => 'img/upload/%y/%m/%f', 	// default upload path relative to webroot folder (see below for path parameters)
 				'extensions' => ['jpg', 'png'],  	// array of authorized extensions (lowercase)
@@ -69,7 +69,7 @@ class PostsTable extends Table
 				'max_height' => 0,					// maximum authorized height for uploaded pictures. Default: 0 (no limitation)
 				'size' => 0							// maximum autorized size for uploaded pictures (in kb). Default: 0 (no limitation)
 			]
-		]);
+		);
 	}
 }
 ```
