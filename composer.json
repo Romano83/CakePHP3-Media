@@ -15,13 +15,13 @@
 	},
 	"autoload" : {
 		"psr-4" : {
-			"Romano83\\Cakephp3Media\\" : "src"
+			"Media\\" : "src"
 		}
 	},
 	"autoload-dev" : {
 		"psr-4" : {
-			"Romano83\\Cakephp3Media\\Test\\" : "tests",
-			"Romano83\\Cakephp3Media\\Test\\Fixture\\" : "tests/Fixture",
+			"Media\\Test\\" : "tests",
+			"Media\\Test\\Fixture\\" : "tests/Fixture",
 			"Cake\\Test\\" : "./vendor/cakephp/cakephp/tests"
 		}
 	},
