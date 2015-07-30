@@ -19,7 +19,7 @@ class MediasController extends AppController
     public function canUploadMedias($ref, $refId)
     {
         if (method_exists('App\Controller\AppController', 'canUploadMedias')) {
-            return parent::canUploadMedias($ref, $refId);
+            return \App\Controller\AppController::canUploadMedias($ref, $refId);
         } else {
             return false;
         }
