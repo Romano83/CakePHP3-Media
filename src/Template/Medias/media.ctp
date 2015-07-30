@@ -16,7 +16,7 @@
 				<span class="file-title"><strong><?= basename($media->file); ?></strong></span>
 				<?php if($media->file_type == 'pic'): ?>
 				<span class="file-dimension"><?= $sizes[0].' x '.$sizes[1]; ?></span>
-				<a class="edit-file" href="#"><?= __d('media','Modify picture'); ?></a>
+				<!--<a class="edit-file" href="#"><?= __d('media','Modify picture'); ?></a>-->
 				<?php endif; ?>
 				<?= $this->Html->link(__d('media','Delete definitively'), ['action'=>'delete',$media->id], ['class'=>'delete red']); ?>
 			</div>
