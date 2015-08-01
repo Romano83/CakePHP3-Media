@@ -1,5 +1,8 @@
 # Media plugin for CakePHP 3
 
+[![Build Status](https://travis-ci.org/Romano83/CakePHP3-Media.svg?branch=master)](https://travis-ci.org/Romano83/CakePHP3-Media)
+[![Coverage Status](https://coveralls.io/repos/Romano83/CakePHP3-Media/badge.svg?branch=master&service=github)](https://coveralls.io/github/Romano83/CakePHP3-Media?branch=master)
+
 ## UPDATE 2015-07-30
 **WARNING**
 
