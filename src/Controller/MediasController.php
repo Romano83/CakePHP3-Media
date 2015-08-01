@@ -256,7 +256,6 @@ class MediasController extends AppController {
         if (! $this->request->is('ajax')) {
             throw new BadRequestException();
         }
-        debug($this->request->data['Media']);
         if (! empty($this->request->data['Media'])) {
             $id = key($this->request->data['Media']);
             $media = $this->Medias->get($id, [

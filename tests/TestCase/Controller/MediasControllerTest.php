@@ -271,7 +271,6 @@ class MediasControllerTest extends IntegrationTestCase {
         ];
         $this->post('/media/medias/order', $data);
         $media = $this->Medias->find('list', ['keyField' => 'id', 'valueField' => 'position'])->toArray();
-        debug($media); die;
         $this->assertEquals(0, $media[1]);
         $this->assertEquals(1, $media[2]);
     }
