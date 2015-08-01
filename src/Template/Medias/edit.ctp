@@ -4,7 +4,7 @@
 			<div class="image">
 				<?= $this->Html->image($data['src'], ['class' => 'path']); ?>
 				<div class="actions">
-					<button class="btn btn-default"><?= __d('media', 'Modify picture'); ?></button>
+					<!--<button class="btn btn-default"><?= __d('media', 'Modify picture'); ?></button>-->
 					<?= $this->Html->link(__d('media', 'Replace picture'), ['controller' => 'medias', 'action' => 'index', $data['ref'], $data['ref_id'], '?' => ['editor' => $data['editor']]], ['class' => 'btn btn-default']); ?>
 				</div>
 			</div>

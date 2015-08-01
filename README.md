@@ -1,5 +1,13 @@
 # Media plugin for CakePHP 3
 
+## UPDATE 2015-07-30
+**WARNING**
+
+If you download this plugin before this date, you can have this error : 
+>*Error: The application is trying to load a file from the Media plugin. aroundMake sure your plugin Media is in the /your/path/to/app/plugins/ directory and was loaded.*
+
+To fix this error, you **must** run `composer remove romano83/cakephp3-media` and `composer require romano83/cakephp3-media`. Sorry for this problem and I hope you can enjoy this plugin !
+
 ## About
 
 The aim of this plugin is to give you the ability to create and associate any kind of medias in your application.
