@@ -127,7 +127,7 @@ If you want to add thumb for your posts, you must add `media_id` field in your '
 
 #### Notice
 
-In order to upload pictures, you should implement **draft system** for your model.
+In order to upload pictures, you should implement **[draft system](https://github.com/Romano83/CakePHP3-draft)** for your model.
 
 
 ## ToDo

@@ -1,4 +1,5 @@
 /vendor/*
+/webroot/coverage/*
 /css/.sass-cache/*
 /css/config.rb
 /css/style.scss

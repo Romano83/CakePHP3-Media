@@ -32,8 +32,8 @@ class MediasTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->image = ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Media' . DS . 'Test' . DS . 'testHelper.png';  
-        $this->resizedImage = ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Media' . DS . 'Test' . DS . 'testHelper_50x50.jpg';
+        $this->image = TMP . 'testHelper.png';  
+        $this->resizedImage = TMP . 'testHelper_50x50.jpg';
         $config = TableRegistry::exists('Medias') ? [] : ['className' => 'Media\Model\Table\MediasTable'];
         $this->Medias = TableRegistry::get('Medias', $config);          	
 	    	$this->Medias = $this->getMockForModel('Media.Medias', array('move_uploaded_file'));
@@ -61,12 +61,11 @@ class MediasTableTest extends TestCase
      */
     public function testBeforeDeleteWithOriginalFile()
     {
-    		copy($this->image, WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper.png');
-        $this->assertEquals(true, file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper.png'));
+    		copy($this->image, WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . 'testHelper.png');
+        $this->assertEquals(true, file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . 'testHelper.png'));
         $media = $this->Medias->get(1);
         $media = $this->Medias->delete($media);
-        \unlink(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper.png');
-        $this->assertEquals(false, file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper.png'));   	
+        $this->assertEquals(false, file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . 'testHelper.png'));   	
     }
     
     /**
@@ -77,12 +76,11 @@ class MediasTableTest extends TestCase
      */
     public function testBeforeDeleteWithResizedFile()
     {
-    		copy($this->resizedImage, WWW_ROOT .  'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper_50x50.jpg');
-        $this->assertEquals(true, file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper_50x50.jpg'));  
+    		copy($this->resizedImage, WWW_ROOT .  'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . 'testHelper_50x50.jpg');
+        $this->assertEquals(true, file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . 'testHelper_50x50.jpg'));  
         $media = $this->Medias->get(2);
         $this->Medias->delete($media); 
-        \unlink(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper_50x50.jpg');
-        $this->assertEquals(false, file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper_50x50.jpg'));     	
+        $this->assertEquals(false, file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . 'testHelper_50x50.jpg'));     	
     }
     
     /**
@@ -128,7 +126,7 @@ class MediasTableTest extends TestCase
     			'id' => 4,
     			'ref' => 'Posts',
     			'ref_id' => 1,
-    			'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS. 'testhelper.png',
+    			'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS. 'testhelper.png',
     			'name' => null,
     			'position' => 0,
     			'caption' => null
@@ -136,8 +134,8 @@ class MediasTableTest extends TestCase
     	$media = $this->Medias->newEntity();
     	$media = $this->Medias->patchEntity($media, $data, ['validation' => 'default']); 
 
-    	$this->test_move_uploded_file($data['file']['file']['tmp_name'], WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS. $data['file']['file']['name']);
-    	$this->assertTrue(\file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS. $file['file']['name']));
+    	$this->test_move_uploaded_file($data['file']['file']['tmp_name'], WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS. $data['file']['file']['name']);
+    	$this->assertTrue(\file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS. $file['file']['name']));
     	
     	$result = $this->Medias->save($media, $file);
     	$this->assertInstanceOf('Media\Model\Entity\Media', $result);    	
@@ -154,7 +152,7 @@ class MediasTableTest extends TestCase
      * @param string $filename
      * @param string $destination
      */
-    public function test_move_uploded_file($filename, $destination){
+    public function test_move_uploaded_file($filename, $destination){
     	return copy($filename, $destination);
     }
              
@@ -222,7 +220,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-				'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . '%f',
+				'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS . '%f',
 				'extensions' => ['jpg', 'png', 'gif'],
     	]);
     	$expected = [
@@ -257,7 +255,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-    		'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . '%f',
+    		'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS . '%f',
     		'extensions' => ['jpg', 'png', 'gif'],
 				'limit' => 1
     	]);
@@ -299,7 +297,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-    			'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS. '%f',
+    			'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
     			'extensions' => ['jpg', 'png', 'gif'],
     			'max_width' => 150
     	]);
@@ -338,7 +336,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-    			'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS. '%f',
+    			'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
     			'extensions' => ['jpg', 'png', 'gif'],
     			'max_height' => 150
     	]);
@@ -377,7 +375,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-    			'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS. '%f',
+    			'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
     			'extensions' => ['jpg', 'png', 'gif'],
     			'size' => 50
     	]);

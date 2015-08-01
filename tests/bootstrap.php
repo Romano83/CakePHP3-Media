@@ -4,6 +4,7 @@ use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
+use Cake\Routing\DispatcherFactory;
 
 require_once 'vendor/autoload.php';
 
@@ -18,15 +19,17 @@ define('APP_DIR', 'tests_app');
 define('WEBROOT_DIR', 'webroot');
 define('WWW_ROOT', APP . 'webroot' . DS);
 define('TMP', ROOT . 'tests' . DS . 'tmp' . DS);
-// define('CONFIG', APP. 'config' . DS);
+define('CONFIG', APP . 'config' . DS);
 define('CACHE', TMP);
 define('LOGS', TMP);
+
+require CAKE . 'Core/ClassLoader.php';
 
 $loader = new \Cake\Core\ClassLoader;
 $loader->register();
 $loader->addNamespace('Cake\Test\Fixture', ROOT . '/vendor/cakephp/cakephp/tests/Fixture');
 
-require_once CORE_PATH . 'config/bootstrap.php';
+require_once CORE_PATH . 'config' . DS . 'bootstrap.php';
 
 date_default_timezone_set('UTC');
 mb_internal_encoding('UTF-8');
@@ -75,17 +78,20 @@ Cache::config([
 
 // Ensure default test connection is defined
 if (!getenv('db_class')) {
-	putenv('db_class=Cake\Database\Driver\Mysql');
-	putenv('db_database=test');
-	putenv('db_login=root');
-	putenv('db_password=root');
+	putenv('db_class=Cake\Database\Driver\Sqlite');
+	putenv('db_dsn=sqlite::memory:');
+	
+// 	putenv('db_database=test');
+// 	putenv('db_login=root');
+// 	putenv('db_password=root');
 }
 
 
 ConnectionManager::config('test', [
 	'className' => 'Cake\Database\Connection',
 	'driver' => getenv('db_class'),
-	'host' => 'localhost',
+  'dsn' => getenv('db_dsn'),
+// 	'host' => 'localhost',
 	'database' => getenv('db_database'),
 	'username' => getenv('db_login'),
 	'password' => getenv('db_password'),
@@ -105,4 +111,7 @@ Log::config([
 	]
 ]);
 
-Plugin::load('Media/Media', ['path' => ROOT]);
+Plugin::load('Media', ['path' => ROOT, 'bootstrap' => false, 'routes' => true]);
+
+DispatcherFactory::add('Routing');
+DispatcherFactory::add('ControllerFactory');

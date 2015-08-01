@@ -4,8 +4,7 @@ namespace Media\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
 
-class PostsFixture extends TestFixture
-{
+class PostsFixture extends TestFixture {
 
 	public $fields = [
 			'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
@@ -29,16 +28,16 @@ class PostsFixture extends TestFixture
 					'id' => 1, 
 					'name' => 'First Article', 
 					'content' => 'First Article content', 
-					'online' => '1', 
+					'online' => 1, 
 					'created' => '2007-03-18 10:39:23', 
 					'updated' => '2007-03-18 10:41:31',
-					'media_id' => 4
+					'media_id' => 1
 			],
       [
       		'id' => 2, 
       		'name' => 'Second Article', 
       		'content' => 'Second Article content', 
-      		'online' => '1', 
+      		'online' => 1, 
       		'created' => '2007-03-18 10:41:23', 
       		'updated' => '2007-03-18 10:43:31',
       		'media_id' => 0
@@ -47,7 +46,7 @@ class PostsFixture extends TestFixture
 					'id' => 3, 
 					'name' => 'Third Article', 
 					'content' => 'Third Article content', 
-					'online' => '1', 
+					'online' => 1, 
 					'created' => '2007-03-18 10:43:23', 
 					'updated' => '2007-03-18 10:45:31',
 					'media_id' => 0

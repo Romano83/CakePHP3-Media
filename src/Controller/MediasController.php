@@ -7,17 +7,16 @@ use Cake\Network\Exception\ForbiddenException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Routing\Router;
 
-class MediasController extends AppController
-{
+class MediasController extends AppController {
 
     /**
      *
      * @param Cake\ORM\Table $ref
      * @param int $refId
+     * 
      * @return bool
      */
-    public function canUploadMedias($ref, $refId)
-    {
+    public function canUploadMedias($ref, $refId) {
         if (method_exists('App\Controller\AppController', 'canUploadMedias')) {
             return \App\Controller\AppController::canUploadMedias($ref, $refId);
         } else {
@@ -27,10 +26,10 @@ class MediasController extends AppController
 
     /**
      * @param \Cake\Event\Event $event
+     * 
      * @return void
      */
-    public function beforeFilter(Event $event)
-    {
+    public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
         $this->layout = 'uploader';
         if(in_array('Security', $this->components()->loaded())){
@@ -42,11 +41,12 @@ class MediasController extends AppController
      *
      * @param Cake\ORM\Entity $ref
      * @param int $refId
+     * 
      * @throws Cake\Network\Exception\ForbiddenException
+     * 
      * @return array
      */
-    public function index($ref, $refId)
-    {
+    public function index($ref, $refId) {
         if (! $this->canUploadMedias($ref, $refId)) {
             throw new ForbiddenException();
         }
@@ -76,12 +76,13 @@ class MediasController extends AppController
     /**
      *
      * @param int|null $id
+     * 
      * @throws \Cake\Network\Exception\NotFoundException
      * @throws \Cake\Network\Exception\ForbiddenException
+     * 
      * @return void
      */
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         $id = $this->request->query['media_id'];
         $data = [];
         if ($id) {
@@ -109,11 +110,12 @@ class MediasController extends AppController
      *
      * @param Cake\ORM\Entity $ref
      * @param int $refId
+     * 
      * @throws \Cake\Network\Exception\ForbiddenException
+     * 
      * @return void
      */
-    public function upload($ref, $refId)
-    {
+    public function upload($ref, $refId) {
         if (! $this->canUploadMedias($ref, $refId)) {
             throw new ForbiddenException();
         }
@@ -131,6 +133,7 @@ class MediasController extends AppController
             echo json_encode([
                 'error' => $media->errors()
             ]);
+            return;
         } else {
             $media = $this->Medias->save($media, $this->request->data);
         }
@@ -146,13 +149,14 @@ class MediasController extends AppController
     /**
      *
      * @param int $id            
+     * 
      * @throws \Cake\Network\Exception\BadRequestException
      * @throws \Cake\Network\Exception\NotFoundException
      * @throws \Cake\Network\Exception\ForbiddenException
+     * 
      * @return void
      */
-    public function update($id)
-    {
+    public function update($id) {
         if (! $this->request->is('ajax')) {
             throw new BadRequestException();
         }
@@ -180,14 +184,15 @@ class MediasController extends AppController
 
     /**
      *
-     * @param int $id            
+     * @param int $id     
+     *        
      * @throws \Cake\Network\Exception\BadRequestException
      * @throws \Cake\Network\Exception\NotFoundException
      * @throws \Cake\Network\Exception\ForbiddenException
+     * 
      * @return void
      */
-    public function delete($id)
-    {
+    public function delete($id) {
         $this->autoRender = false;
         if (! $this->request->is('ajax')) {
             throw new BadRequestException();
@@ -207,12 +212,13 @@ class MediasController extends AppController
     /**
      *
      * @param int $id            
+     * 
      * @throws \Cake\Network\Exception\NotFoundException
      * @throws \Cake\Network\Exception\ForbiddenException
+     * 
      * @return void
      */
-    public function thumb($id)
-    {
+    public function thumb($id) {
         $media = $this->Medias->get($id, [
             'fields' => [
                 'ref',
@@ -241,12 +247,16 @@ class MediasController extends AppController
     /**
      *
      * @throws \Cake\Network\Exception\ForbiddenException
+     * 
      * @return void
      */
-    public function order()
-    {
+    public function order() {
         $this->layout = null;
         $this->autoRender = false;
+        if (! $this->request->is('ajax')) {
+            throw new BadRequestException();
+        }
+        debug($this->request->data['Media']);
         if (! empty($this->request->data['Media'])) {
             $id = key($this->request->data['Media']);
             $media = $this->Medias->get($id, [
