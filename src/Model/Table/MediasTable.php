@@ -25,7 +25,8 @@ class MediasTable extends Table
      * Initialize method
      *
      * @param array $config
-     *            The configuration for the Table.
+     *            configuration for the Table.
+     *            
      * @return void
      */
     public function initialize(array $config)
@@ -38,9 +39,10 @@ class MediasTable extends Table
     /**
      * Delete uploaded files
      *
-     * @param \Cake\Event\Event $event
-     * @param \Cake\ORM\Entity $entity
-     * @param \ArrayObject $options
+     * @param \Cake\Event\Event $event            
+     * @param \Cake\ORM\Entity $entity            
+     * @param \ArrayObject $options            
+     *
      * @return bool
      */
     public function beforeDelete(Event $event, Entity $entity, \ArrayObject $options)
@@ -59,10 +61,12 @@ class MediasTable extends Table
     /**
      * File treatment, upload and return string to save in database
      *
-     * @param \Cake\Event\Event $event
-     * @param \Cake\ORM\Entity $entity
-     * @param \ArrayObject $options
+     * @param \Cake\Event\Event $event            
+     * @param \Cake\ORM\Entity $entity            
+     * @param \ArrayObject $options            
+     *
      * @throws Cake\Network\Exception\NotImplementedException
+     *
      * @return bool
      */
     public function beforeSave(Event $event, Entity $entity, \ArrayObject $options)
@@ -86,8 +90,24 @@ class MediasTable extends Table
             $extension = \strtolower($pathinfo['extension']) == 'jpeg' ? 'jpg' : \strtolower($pathinfo['extension']);
             
             $filename = Inflector::slug($pathinfo['filename'], '-');
-            $search = ['/', '%id', '%mid', '%cid', '%y', '%m', '%f' ];
-            $replace = [ DS, $refId, ceil($refId / 1000), ceil($refId / 100), date('Y'), date('m'), \strtolower(Inflector::slug($filename)) ];
+            $search = [
+                '/',
+                '%id',
+                '%mid',
+                '%cid',
+                '%y',
+                '%m',
+                '%f'
+            ];
+            $replace = [
+                DS,
+                $refId,
+                ceil($refId / 1000),
+                ceil($refId / 100),
+                date('Y'),
+                date('m'),
+                \strtolower(Inflector::slug($filename))
+            ];
             $file = \str_replace($search, $replace, $path) . '.' . $extension;
             $this->testDuplicate($file);
             if (! \file_exists(\dirname(WWW_ROOT . $file))) {
@@ -103,8 +123,9 @@ class MediasTable extends Table
     /**
      * Alias for move_uploded_file function
      *
-     * @param string $filename
-     * @param string $destination
+     * @param string $filename            
+     * @param string $destination            
+     *
      * @return bool
      */
     protected function move_uploaded_file($filename, $destination)
@@ -116,8 +137,9 @@ class MediasTable extends Table
      * Test if file $dir exists.
      * If it's the case, add a {n} before the extension
      *
-     * @param string $dir
-     * @param int $count
+     * @param string $dir            
+     * @param int $count            
+     *
      * @return string
      */
     protected function testDuplicate(&$dir, $count = 0)
@@ -139,7 +161,8 @@ class MediasTable extends Table
     /**
      * Validate file before save entity
      *
-     * @param \Cake\Validation\Validator $validator
+     * @param \Cake\Validation\Validator $validator            
+     *
      * @return \Cake\Validation\Validator
      */
     public function validationDefault(Validator $validator)
@@ -161,7 +184,7 @@ class MediasTable extends Table
                             ->where([
                             'ref' => $provider['data']['ref'],
                             'ref_id' => $provider['data']['ref_id']
-                            ])
+                        ])
                             ->count();
                         if ($qty >= $table->medias['limit']) {
                             return __d('media', "You can't send more than {0} files", $table->medias['limit']);

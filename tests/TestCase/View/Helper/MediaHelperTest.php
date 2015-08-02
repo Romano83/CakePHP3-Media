@@ -10,8 +10,12 @@ use Media\View\Helper\MediaHelper;
  */
 class MediaHelperTest extends TestCase
 {
-    
-    public $helper = ['Html', 'Form', 'Url'];
+
+    public $helper = [
+        'Html',
+        'Form',
+        'Url'
+    ];
 
     /**
      * setUp method
@@ -33,7 +37,7 @@ class MediaHelperTest extends TestCase
     public function tearDown()
     {
         unset($this->Media);
-
+        
         parent::tearDown();
     }
 
@@ -49,7 +53,7 @@ class MediaHelperTest extends TestCase
         $this->assertContains('<input type="hidden" id="explorer" value="/media/medias/index/Posts/1">', $result);
         $this->assertContains('<input type="hidden" id="edit" value="/media/medias/edit/">', $result);
     }
-    
+
     /**
      * Test testCkeditorRender
      *
@@ -62,7 +66,7 @@ class MediaHelperTest extends TestCase
         $this->assertContains('<input type="hidden" id="explorer" value="/media/medias/index/Posts/1">', $result);
         $this->assertContains('<input type="hidden" id="edit" value="/media/medias/edit/">', $result);
     }
-    
+
     /**
      * Test testIframeRender
      *
@@ -73,6 +77,4 @@ class MediaHelperTest extends TestCase
         $result = $this->Media->iframe('Posts', 1);
         $this->assertContains('<iframe src="/media/medias/index/Posts/1" style="width:100%;" id="medias-Posts-1"></iframe>', $result);
     }
-    
-    
 }

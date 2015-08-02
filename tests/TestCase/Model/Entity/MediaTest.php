@@ -11,7 +11,10 @@ use Cake\ORM\TableRegistry;
 class MediaTest extends TestCase
 {
 
-		public $fixtures = ['plugin.media.medias'];
+    public $fixtures = [
+        'plugin.media.medias'
+    ];
+
     /**
      * setUp method
      *
@@ -20,9 +23,16 @@ class MediaTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Medias') ? [] : ['className' => 'Media\Model\Table\MediasTable'];
+        $config = TableRegistry::exists('Medias') ? [] : [
+            'className' => 'Media\Model\Table\MediasTable'
+        ];
         $this->Medias = TableRegistry::get('Medias', $config);
-	    	$this->pictures = ['jpg', 'png', 'gif', 'bmp'];
+        $this->pictures = [
+            'jpg',
+            'png',
+            'gif',
+            'bmp'
+        ];
     }
 
     /**
@@ -33,52 +43,63 @@ class MediaTest extends TestCase
     public function tearDown()
     {
         unset($this->Medias);
-
+        
         parent::tearDown();
     }
 
     /**
-     * Test testGetFileType method
+     * Test testGetFileType
      *
      * @return void
      */
     public function testGetFileType()
     {
-    	$data = [
-    		'ref' => 'Posts',
-        'ref_id' => 1,
-        'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper.png',
-    	];
-    	$media = $this->Medias->newEntity($data, ['validate' => false]);
-    	$this->assertEquals('pic', $media->file_type);
-    	
-    	$data = [
-    		'ref' => 'Posts',
-        'ref_id' => 1,
-        'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'document.pdf',
-    	];
-    	$media = $this->Medias->newEntity($data, ['validate' => false]);
-    	$this->assertEquals('pdf', $media->file_type);
-    }
-    
-    public function testGetFileIcon()
-    {
-    	$data = [
-    		'ref' => 'Posts',
-        'ref_id' => 1,
-        'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper.png',
-    	];
-    	$media = $this->Medias->newEntity($data, ['validate' => false]);
-    	$this->assertEquals($media->file, $media->file_icon);
-    	
-    	$data = [
-    			'ref' => 'Posts',
-    			'ref_id' => 1,
-    			'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'document.pdf',
-    	];
-    	$media = $this->Medias->newEntity($data, ['validate' => false]);
-    	$this->assertEquals('Media.pdf.png', $media->file_icon);
+        $data = [
+            'ref' => 'Posts',
+            'ref_id' => 1,
+            'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper.png'
+        ];
+        $media = $this->Medias->newEntity($data, [
+            'validate' => false
+        ]);
+        $this->assertEquals('pic', $media->file_type);
+        
+        $data = [
+            'ref' => 'Posts',
+            'ref_id' => 1,
+            'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'document.pdf'
+        ];
+        $media = $this->Medias->newEntity($data, [
+            'validate' => false
+        ]);
+        $this->assertEquals('pdf', $media->file_type);
     }
 
-   
+    /**
+     * Test testGetFileIcon
+     *
+     * @return void
+     */
+    public function testGetFileIcon()
+    {
+        $data = [
+            'ref' => 'Posts',
+            'ref_id' => 1,
+            'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'testHelper.png'
+        ];
+        $media = $this->Medias->newEntity($data, [
+            'validate' => false
+        ]);
+        $this->assertEquals($media->file, $media->file_icon);
+        
+        $data = [
+            'ref' => 'Posts',
+            'ref_id' => 1,
+            'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '07' . DS . 'document.pdf'
+        ];
+        $media = $this->Medias->newEntity($data, [
+            'validate' => false
+        ]);
+        $this->assertEquals('Media.pdf.png', $media->file_icon);
+    }
 }

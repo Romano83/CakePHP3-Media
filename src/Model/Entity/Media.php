@@ -30,6 +30,7 @@ class Media extends Entity
     public $type;
 
     /**
+     *
      * @return string
      */
     protected function _getFileType()
@@ -45,6 +46,7 @@ class Media extends Entity
     }
 
     /**
+     *
      * @return string
      */
     protected function _getFileIcon()

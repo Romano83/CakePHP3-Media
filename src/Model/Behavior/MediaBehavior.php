@@ -24,15 +24,18 @@ class MediaBehavior extends Behavior
         'max_width' => 0,
         'max_height' => 0,
         'size' => 0
-    ]; // in kB
-
+    ];
+ // in kB
+    
     /**
      * Add HasMany association in table whith this behavior.
      * If database table has 'media_id' field, the behavior add belongsTo association
-     * 
+     *
      * (non-PHPdoc)
+     *
      * @see \Cake\ORM\Behavior::initialize()
-     * @param array $config The configuration settings provided to this behavior.
+     * @param array $config
+     *            The configuration settings provided to this behavior.
      * @return void
      */
     public function initialize(array $config)
@@ -54,10 +57,10 @@ class MediaBehavior extends Behavior
     }
 
     /**
-     * 
-     * @param \Cake\Event\Event $event
-     * @param \Cake\ORM\Entity $entity
-     * @param \ArrayObject $options
+     *
+     * @param \Cake\Event\Event $event            
+     * @param \Cake\ORM\Entity $entity            
+     * @param \ArrayObject $options            
      * @return void
      */
     public function afterSave(Event $event, Entity $entity, \ArrayObject $options)

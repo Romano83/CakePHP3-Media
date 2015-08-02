@@ -11,8 +11,11 @@ use Cake\ORM\TableRegistry;
 class MediaBehaviorTest extends TestCase
 {
 
-    public $fixtures = ['plugin.media.medias', 'plugin.media.posts'];
-    
+    public $fixtures = [
+        'plugin.media.medias',
+        'plugin.media.posts'
+    ];
+
     /**
      * setUp method
      *
@@ -22,19 +25,21 @@ class MediaBehaviorTest extends TestCase
     {
         parent::setUp();
         $this->image = TMP . 'testHelper.png';
-        $config = TableRegistry::exists('Medias') ? [] : ['className' => 'Media\Model\Table\MediasTable'];
+        $config = TableRegistry::exists('Medias') ? [] : [
+            'className' => 'Media\Model\Table\MediasTable'
+        ];
         $this->Model = TableRegistry::get('Medias', $config);
         $this->Posts = TableRegistry::get('Posts');
         $this->Posts->addAssociations([
             'hasMany' => [
-                    'Media' => [
-                        'className' => 'Media.Medias',
-                        'foreignKey' => 'ref_id',
-                        'order' => 'Media.position ASC',
-                        'conditions' => 'ref = "' . $this->Model->alias() . '"',
-                        'dependant' => true
-                    ]
-                ],
+                'Media' => [
+                    'className' => 'Media.Medias',
+                    'foreignKey' => 'ref_id',
+                    'order' => 'Media.position ASC',
+                    'conditions' => 'ref = "' . $this->Model->alias() . '"',
+                    'dependant' => true
+                ]
+            ],
             'belongsTo' => [
                 'Thumb' => [
                     'className' => 'Media.Medias',
@@ -55,23 +60,27 @@ class MediaBehaviorTest extends TestCase
         TableRegistry::clear();
         parent::tearDown();
     }
-    
+
     /**
      * test testInitialize method
-     * 
+     *
      * @cover Media\Model\Behavior\MediaBehavior::initialize
+     *
      * @return void
      */
     public function testInitialize()
     {
-         $this->assertTrue($this->Posts->associations()->has('media'));
-         $this->assertTrue($this->Posts->associations()->has('thumb'));
+        $this->assertTrue($this->Posts->associations()
+            ->has('media'));
+        $this->assertTrue($this->Posts->associations()
+            ->has('thumb'));
     }
 
     /**
      * test afterSave method
-     * 
+     *
      * @cover \Media\Model\Behavior\MediaBehavior::afterSave
+     *
      * @return void
      */
     public function testAfterSave()
@@ -88,19 +97,21 @@ class MediaBehaviorTest extends TestCase
         ];
         $mediaData = [
             'ref' => 'Posts',
-        		'ref_id' => 1,
-        		'file' => [
-        			  	'file' => [
-        				      'name' => 'testHelper.png',
-        					    'type' => 'image/png',
-        					    'tmp_name' => $this->image,
-        					    'error' => UPLOAD_ERR_OK,
-        					    'size' => 52085
-        			    ]
-        		]
+            'ref_id' => 1,
+            'file' => [
+                'file' => [
+                    'name' => 'testHelper.png',
+                    'type' => 'image/png',
+                    'tmp_name' => $this->image,
+                    'error' => UPLOAD_ERR_OK,
+                    'size' => 52085
+                ]
+            ]
         ];
         $media = $this->Model->newEntity();
-        $media = $this->Model->patchEntity($media, $mediaData, ['validation' => 'default']);
+        $media = $this->Model->patchEntity($media, $mediaData, [
+            'validation' => 'default'
+        ]);
         $media = $this->Model->save($media, $file);
         
         $postData = [
@@ -116,7 +127,7 @@ class MediaBehaviorTest extends TestCase
         ];
         $post = $this->Posts->newEntity($postData);
         $post = $this->Posts->save($post);
-
-//         $result = $this->Posts->get($post->id);
+        
+        // $result = $this->Posts->get($post->id);
     }
 }
