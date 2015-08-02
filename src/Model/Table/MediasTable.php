@@ -113,7 +113,7 @@ class MediasTable extends Table
             if (! \file_exists(\dirname(WWW_ROOT . $file))) {
                 \mkdir(\dirname(WWW_ROOT . $file), 0777, true);
             }
-            $this->move_uploaded_file($options['file']['tmp_name'], WWW_ROOT . $file);
+            $this->moveUploadedFile($options['file']['tmp_name'], WWW_ROOT . $file);
             @\chmod(WWW_ROOT . $file, 0777);
             $entity->file = '/' . \trim(\str_replace(DS, '/', $file), '/');
         }
@@ -128,7 +128,7 @@ class MediasTable extends Table
      *
      * @return bool
      */
-    protected function move_uploaded_file($filename, $destination)
+    protected function moveUploadedFile($filename, $destination)
     {
         return \move_uploaded_file($filename, $destination);
     }

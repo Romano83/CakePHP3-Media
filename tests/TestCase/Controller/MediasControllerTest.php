@@ -40,7 +40,7 @@ class MediasControllerTest extends IntegrationTestCase
             ->method('move_uploaded_file')
             ->will($this->returnCallback([
             $this,
-            'test_move_uploaded_file'
+            'testMoveUploadedFile'
         ]));
         $this->Posts = TableRegistry::get('Posts');
     }
@@ -63,7 +63,9 @@ class MediasControllerTest extends IntegrationTestCase
      * @return void
      */
     public function testCanUploadMedias()
-    {}
+    {
+        
+    }
 
     /**
      * Test beforeFilter method
@@ -71,7 +73,9 @@ class MediasControllerTest extends IntegrationTestCase
      * @return void
      */
     public function testBeforeFilter()
-    {}
+    {
+        
+    }
 
     /**
      * Test testIndexWithoutCanUploadMediasMethod
@@ -217,7 +221,7 @@ class MediasControllerTest extends IntegrationTestCase
             ->method('move_uploaded_file')
             ->will($this->returnCallback([
             $this,
-            'test_move_uploaded_file'
+            'testMoveUploadedFile'
         ]));
         $data = [
             'file' => [
@@ -524,4 +528,3 @@ class MediasControllerTest extends IntegrationTestCase
         // $this->assertEquals(2, $media[3]);
     }
 }
-

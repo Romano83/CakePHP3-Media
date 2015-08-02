@@ -45,7 +45,7 @@ class MediasTableTest extends TestCase
             ->method('move_uploaded_file')
             ->will($this->returnCallback([
             $this,
-            'test_move_uploaded_file'
+            'testMoveUploadedFile'
         ]));
         $this->Utility = new Utility();
     }
@@ -151,7 +151,7 @@ class MediasTableTest extends TestCase
             'validation' => 'default'
         ]);
         
-        $this->test_move_uploaded_file($data['file']['file']['tmp_name'], WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . $data['file']['file']['name']);
+        $this->testMoveUploadedFile($data['file']['file']['tmp_name'], WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . $data['file']['file']['name']);
         $this->assertTrue(\file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . $file['file']['name']));
         \unlink(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . $file['file']['name']);
         
@@ -175,7 +175,7 @@ class MediasTableTest extends TestCase
      * @param string $filename            
      * @param string $destination            
      */
-    public function test_move_uploaded_file($filename, $destination)
+    public function testMoveUploadedFile($filename, $destination)
     {
         // debug(copy($filename, $destination));
         return copy($filename, $destination);
@@ -449,4 +449,3 @@ class MediasTableTest extends TestCase
         $this->assertEquals($expected, $this->Utility->getL2keys($media->errors()));
     }
 }
-

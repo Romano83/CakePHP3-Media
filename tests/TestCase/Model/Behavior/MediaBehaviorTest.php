@@ -70,10 +70,8 @@ class MediaBehaviorTest extends TestCase
      */
     public function testInitialize()
     {
-        $this->assertTrue($this->Posts->associations()
-            ->has('media'));
-        $this->assertTrue($this->Posts->associations()
-            ->has('thumb'));
+        $this->assertTrue($this->Posts->associations()->has('media'));
+        $this->assertTrue($this->Posts->associations()->has('thumb'));
     }
 
     /**
