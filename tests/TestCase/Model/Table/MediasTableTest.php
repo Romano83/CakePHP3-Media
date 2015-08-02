@@ -37,7 +37,7 @@ class MediasTableTest extends TestCase
         $config = TableRegistry::exists('Medias') ? [] : ['className' => 'Media\Model\Table\MediasTable'];
         $this->Medias = TableRegistry::get('Medias', $config);          	
 	    	$this->Medias = $this->getMockForModel('Media.Medias', array('move_uploaded_file'));
-	    	$this->Medias->expects($this->any())->method('move_uploaded_file')->will($this->returnCallback('test_move_uploaded_file'));
+	    	$this->Medias->expects($this->any())->method('move_uploaded_file')->will($this->returnCallback([$this, 'test_move_uploaded_file']));
         $this->Utility = new Utility();
     }
 
@@ -114,7 +114,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-    			'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
+    			'path' => 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
     			'extensions' => ['jpg', 'png', 'gif'],
     			'limit' => 0,
     			'maw_width' => 0,
@@ -123,10 +123,10 @@ class MediasTableTest extends TestCase
     	]);
     	
     	$expected = [
-    			'id' => 4,
+    			'id' => 5,
     			'ref' => 'Posts',
     			'ref_id' => 1,
-    			'file' => WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS. 'testhelper.png',
+    			'file' => DS . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS. 'testhelper.png',
     			'name' => null,
     			'position' => 0,
     			'caption' => null
@@ -136,6 +136,7 @@ class MediasTableTest extends TestCase
 
     	$this->test_move_uploaded_file($data['file']['file']['tmp_name'], WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS. $data['file']['file']['name']);
     	$this->assertTrue(\file_exists(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS. $file['file']['name']));
+    	\unlink(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS. $file['file']['name']);
     	
     	$result = $this->Medias->save($media, $file);
     	$this->assertInstanceOf('Media\Model\Entity\Media', $result);    	
@@ -153,6 +154,7 @@ class MediasTableTest extends TestCase
      * @param string $destination
      */
     public function test_move_uploaded_file($filename, $destination){
+//         debug(copy($filename, $destination));
     	return copy($filename, $destination);
     }
              
@@ -220,7 +222,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-				'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS . '%f',
+				'path' => 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS . '%f',
 				'extensions' => ['jpg', 'png', 'gif'],
     	]);
     	$expected = [
@@ -255,7 +257,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-    		'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS . '%f',
+    		'path' => 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS . '%f',
     		'extensions' => ['jpg', 'png', 'gif'],
 				'limit' => 1
     	]);
@@ -297,7 +299,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-    			'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
+    			'path' => 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
     			'extensions' => ['jpg', 'png', 'gif'],
     			'max_width' => 150
     	]);
@@ -336,7 +338,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-    			'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
+    			'path' => 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
     			'extensions' => ['jpg', 'png', 'gif'],
     			'max_height' => 150
     	]);
@@ -375,7 +377,7 @@ class MediasTableTest extends TestCase
     	];
     	$table = TableRegistry::get($data['ref']);
     	$table->addBehavior('Media.Media', [
-    			'path' => WWW_ROOT . 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
+    			'path' => 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
     			'extensions' => ['jpg', 'png', 'gif'],
     			'size' => 50
     	]);

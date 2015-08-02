@@ -86,7 +86,7 @@ class MediasController extends AppController {
         $id = $this->request->query['media_id'];
         $data = [];
         if ($id) {
-            $media = $this->Medias->get($id);
+            $media = $this->Medias->find()->where(['id' => $id])->first();
             if (! $media) {
                 throw new NotFoundException();
             }
@@ -161,11 +161,8 @@ class MediasController extends AppController {
             throw new BadRequestException();
         }
         $this->autoRender = false;
-        if ($this->request->is([
-            'put',
-            'post'
-        ])) {
-            $media = $this->Medias->get($id);
+        if ($this->request->is(['put','post'])) {
+            $media = $this->Medias->find()->where(['id' => $id])->first();
             if (! $media) {
                 throw new NotFoundException();
             }
@@ -197,7 +194,7 @@ class MediasController extends AppController {
         if (! $this->request->is('ajax')) {
             throw new BadRequestException();
         }
-        $media = $this->Medias->get($id);
+        $media = $this->Medias->find()->where(['id' => $id])->first();
         if (! $media) {
             throw new NotFoundException();
         }
@@ -219,12 +216,10 @@ class MediasController extends AppController {
      * @return void
      */
     public function thumb($id) {
-        $media = $this->Medias->get($id, [
-            'fields' => [
-                'ref',
-                'ref_id'
-            ]
-        ]);
+        $media = $this->Medias->find()
+            ->select(['ref', 'ref_id'])
+            ->where(['id' => $id])
+            ->first();
         if (! $media) {
             throw new NotFoundException();
         }
@@ -270,7 +265,7 @@ class MediasController extends AppController {
             foreach ($this->request->data['Media'] as $k => $v) {
                 $media = $this->Medias->get($k);
                 $media->position = $v;
-                $this->Medias->save($media);
+                $media = $this->Medias->save($media, ['validate' => false]);
             }
         }
     }

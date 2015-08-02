@@ -86,24 +86,8 @@ class MediasTable extends Table
             $extension = \strtolower($pathinfo['extension']) == 'jpeg' ? 'jpg' : \strtolower($pathinfo['extension']);
             
             $filename = Inflector::slug($pathinfo['filename'], '-');
-            $search = [
-                '/',
-                '%id',
-                '%mid',
-                '%cid',
-                '%y',
-                '%m',
-                '%f'
-            ];
-            $replace = [
-                DS,
-                $refId,
-                ceil($refId / 1000),
-                ceil($refId / 100),
-                date('Y'),
-                date('m'),
-                \strtolower(Inflector::slug($filename))
-            ];
+            $search = ['/', '%id', '%mid', '%cid', '%y', '%m', '%f' ];
+            $replace = [ DS, $refId, ceil($refId / 1000), ceil($refId / 100), date('Y'), date('m'), \strtolower(Inflector::slug($filename)) ];
             $file = \str_replace($search, $replace, $path) . '.' . $extension;
             $this->testDuplicate($file);
             if (! \file_exists(\dirname(WWW_ROOT . $file))) {

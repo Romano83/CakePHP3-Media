@@ -26,21 +26,20 @@ class MediaHelper extends Helper
      * @param \Cake\View\View $View    The View this helper is being attached to.
      * @param array $config            Configuration settings for the helper. 
      */
-    public function __construct(View $View, array $config = [])
-    {
+    public function __construct(View $View, array $config = []) {
         parent::__construct($View, $config);
     }
 
     /**
      * 
-     * @param string $fieldName
-     * @param \Cake\ORM\Entity $ref
-     * @param int $refId
-     * @param array $options
+     * @param string            $fieldName  Database field name
+     * @param string            $ref        Table name
+     * @param int               $refId      entity ID
+     * @param array             $options    FormHelper options
+     * 
      * @return string
      */
-    public function tinymce($fieldName, $ref, $refId, array $options = [])
-    {
+    public function tinymce($fieldName, $ref, $refId, array $options = []) {
         $this->Html->script('/media/js/tinymce/tinymce.min.js', [
             'block' => true
         ]);
@@ -52,14 +51,14 @@ class MediaHelper extends Helper
 
     /**
      * 
-     * @param string $fieldName
-     * @param \Cake\ORM\Entity $ref
-     * @param int $refId
-     * @param array $options
+     * @param string            $fieldName  Database field name
+     * @param string            $ref        Table name
+     * @param int               $refId      Entity ID
+     * @param array             $options    FormHelper options
+     * 
      * @return string
      */
-    public function ckeditor($fieldName, $ref, $refId, array $options = [])
-    {
+    public function ckeditor($fieldName, $ref, $refId, array $options = []) {
         $this->Html->script('/media/js/ckeditor/ckeditor.js', [
             'block' => true
         ]);
@@ -68,15 +67,15 @@ class MediaHelper extends Helper
 
     /**
      * 
-     * @param string $fieldName
-     * @param \Cake\ORM\Entity $ref
-     * @param int $refId
-     * @param bool|string $editor
-     * @param array $options
+     * @param string            $fieldName  Database field name
+     * @param string            $ref        Table name
+     * @param int               $refId      Entity ID
+     * @param bool|string       $editor     Editor name
+     * @param array             $options    FormHelper options
+     * 
      * @return string
      */
-    public function textarea($fieldName, $ref, $refId, $editor = false, array $options = [])
-    {
+    public function textarea($fieldName, $ref, $refId, $editor = false, array $options = []) {
         $options = \array_merge([
             'label' => false,
             'style' => 'width:100%;height:500px',
@@ -94,12 +93,12 @@ class MediaHelper extends Helper
     }
 
     /**
-     * @param Entity $ref
-     * @param int $refId
+     * @param string        $ref    Table name
+     * @param int           $refId  Entity ID
+     * 
      * @return string
      */
-    public function iframe($ref, $refId)
-    {
+    public function iframe($ref, $refId) {
         return '<iframe src="' . $this->Url->build("/media/medias/index/$ref/$refId") . '" style="width:100%;" id="medias-' . $ref . '-' . $refId . '"></iframe>';
     }
 }

@@ -10,6 +10,8 @@ use Media\View\Helper\MediaHelper;
  */
 class MediaHelperTest extends TestCase
 {
+    
+    public $helper = ['Html', 'Form', 'Url'];
 
     /**
      * setUp method
@@ -20,7 +22,7 @@ class MediaHelperTest extends TestCase
     {
         parent::setUp();
         $view = new View();
-        $this->Medias = new MediaHelper($view);
+        $this->Media = new MediaHelper($view);
     }
 
     /**
@@ -30,18 +32,47 @@ class MediaHelperTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Medias);
+        unset($this->Media);
 
         parent::tearDown();
     }
 
     /**
-     * Test initial setup
+     * Test testTinymceRender
      *
      * @return void
      */
-    public function testInitialization()
+    public function testTinymceRender()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $result = $this->Media->tinymce('content', 'Posts', 1);
+        $this->assertContains('<textarea name="content" style="width:100%;height:500px" rows="160" class="wysiwyg tinymce" id="content"></textarea>', $result);
+        $this->assertContains('<input type="hidden" id="explorer" value="/media/medias/index/Posts/1">', $result);
+        $this->assertContains('<input type="hidden" id="edit" value="/media/medias/edit/">', $result);
     }
+    
+    /**
+     * Test testCkeditorRender
+     *
+     * @return void
+     */
+    public function testCkeditorRender()
+    {
+        $result = $this->Media->ckeditor('content', 'Posts', 1);
+        $this->assertContains('<textarea name="content" style="width:100%;height:500px" rows="160" class="wysiwyg ckeditor" id="content"></textarea>', $result);
+        $this->assertContains('<input type="hidden" id="explorer" value="/media/medias/index/Posts/1">', $result);
+        $this->assertContains('<input type="hidden" id="edit" value="/media/medias/edit/">', $result);
+    }
+    
+    /**
+     * Test testIframeRender
+     *
+     * @return void
+     */
+    public function testIframeRender()
+    {
+        $result = $this->Media->iframe('Posts', 1);
+        $this->assertContains('<iframe src="/media/medias/index/Posts/1" style="width:100%;" id="medias-Posts-1"></iframe>', $result);
+    }
+    
+    
 }
