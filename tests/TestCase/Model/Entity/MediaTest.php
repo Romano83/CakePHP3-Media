@@ -48,11 +48,11 @@ class MediaTest extends TestCase
     }
 
     /**
-     * Test testGetFileType
+     * Test testGetFileTypeFromPicture
      *
      * @return void
      */
-    public function testGetFileType()
+    public function testGetFileTypeFromPicture()
     {
         $data = [
             'ref' => 'Posts',
@@ -64,6 +64,15 @@ class MediaTest extends TestCase
         ]);
         $this->assertEquals('pic', $media->file_type);
         
+    }
+    
+    /**
+     * Test testGetFileTypeFromPicture
+     *
+     * @return void
+     */
+    public function testGetFileTypeFromDocument()
+    {
         $data = [
             'ref' => 'Posts',
             'ref_id' => 1,
@@ -76,11 +85,11 @@ class MediaTest extends TestCase
     }
 
     /**
-     * Test testGetFileIcon
+     * Test testGetFileIconFromPicture
      *
      * @return void
      */
-    public function testGetFileIcon()
+    public function testGetFileIconFromPicture()
     {
         $data = [
             'ref' => 'Posts',
@@ -91,7 +100,15 @@ class MediaTest extends TestCase
             'validate' => false
         ]);
         $this->assertEquals($media->file, $media->file_icon);
-        
+    }
+    
+    /**
+     * Test testGetFileIconFromDocument
+     *
+     * @return void
+     */
+    public function testGetFileIconFromDocument()
+    {
         $data = [
             'ref' => 'Posts',
             'ref_id' => 1,
