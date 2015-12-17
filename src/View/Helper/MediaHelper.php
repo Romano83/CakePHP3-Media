@@ -34,6 +34,7 @@ class MediaHelper extends Helper
     }
 
     /**
+     * Display TinyMCE editor
      *
      * @param string $fieldName
      *            Database field name
@@ -58,6 +59,7 @@ class MediaHelper extends Helper
     }
 
     /**
+     * Display CkEditor
      *
      * @param string $fieldName
      *            Database field name
@@ -110,8 +112,30 @@ class MediaHelper extends Helper
         }
         return $html;
     }
+    /**
+     * Find the resized image if exists or the original one
+     *
+     * @param string $image
+     *          path to the image
+     * @param array $options
+     *         array of options
+     */
+    public function image($image, $options = [])
+    {
+        $width = isset($options['width']) ? $options['width'] : null;
+        $height = isset($options['height']) ? $options['height'] : null;
+        if ($width && $height) {
+            $pathinfo = \pathinfo($image);
+            $newImg = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '_' . $width . 'x' . $height . '.' . $pathinfo['extension'];
+            if (\file_exists(\trim($newImg, '/'))) {
+                $image = $newImg;
+            }
+        }
+        return $this->Html->image($image, $options);
+    }
 
     /**
+     * Display an iframe with media uploader/gallery
      *
      * @param string $ref
      *            Table name
@@ -122,6 +146,6 @@ class MediaHelper extends Helper
      */
     public function iframe($ref, $refId)
     {
-        return '<iframe src="' . $this->Url->build("/media/medias/index/$ref/$refId") . '" style="width:100%;" id="medias-' . $ref . '-' . $refId . '"></iframe>';
+        return '<iframe src="' . $this->Url->build("/media/medias/index/$ref/$refId") . '" style="width:100%;min-width:600px;" id="medias-' . $ref . '-' . $refId . '"></iframe>';
     }
 }

@@ -4,8 +4,6 @@ namespace Media\Model\Table;
 use Cake\Event\Event;
 use Cake\Network\Exception\NotImplementedException;
 use Cake\ORM\Entity;
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
@@ -119,6 +117,23 @@ class MediasTable extends Table
         }
         return true;
     }
+    
+    /**
+     * Resize images if enable in behavior options
+     *
+     * @param \Cake\Event\Event $event
+     * @param \Cake\ORM\Entity $entity
+     * @param \ArrayObject $options
+     */
+    public function afterSave(Event $event, Entity $entity, \ArrayObject $options)
+    {
+        $table = TableRegistry::get($entity->ref);
+        if (!\is_array($table->medias['resize'])) {
+            return;
+        }
+        $this->resizeImage($entity->file, $table->medias['resize']);
+        return true;
+    }
 
     /**
      * Alias for move_uploded_file function
@@ -155,6 +170,78 @@ class MediasTable extends Table
         } else {
             $count ++;
             $this->testDuplicate($dir, $count);
+        }
+    }
+    
+    /**
+     * Resize image according an array of image sizes
+     * @param string $path      path of the image
+     * @param array $options    resize options
+     */
+    protected function resizeImage($path, array $options)
+    {
+        $path = \trim($path, '/');
+        $pathinfo = \pathinfo(\trim($path, '/'));
+        if (!\in_array($pathinfo['extension'], ['jpg', 'jpeg', 'gif', 'png'])) {
+            return;
+        }
+        foreach ($options['sizes'] as $size) {
+            $width = \explode('x', $size)[0];
+            $height = \explode('x', $size)[1];
+            $output = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '_'. $width . 'x' . $height . '.' . $pathinfo['extension'];
+            if (!\file_exists($output)) {
+                $info = \getimagesize($path);
+                list($oldWidth, $oldHeight) = $info;
+                switch ($info[2]) {
+                    case IMAGETYPE_GIF: $image = \imagecreatefromgif($path); break;
+                    case IMAGETYPE_JPEG : $image = \imagecreatefromjpeg($path); break;
+                    case IMAGETYPE_PNG : $image = \imagecreatefrompng($path); break;
+                    default : return false;
+                }
+                $widthRatio = $oldWidth / $width;
+                $heightRatio = $oldHeight / $height;
+    
+                $optimalRatio = $widthRatio;
+                if ($heightRatio < $widthRatio) {
+                    $optimalRatio = $heightRatio;
+                }
+                $widthCrop = ($oldWidth / $optimalRatio);
+                $heightCrop = ($oldHeight / $optimalRatio);
+    
+                $imageCrop      = \imagecreatetruecolor($widthCrop, $heightCrop);
+                $imageResized   = \imagecreatetruecolor($width, $height);
+    
+                if ($info[2] == IMAGETYPE_GIF || $info[2] == IMAGETYPE_PNG) {
+                    $transparency = \imagecolortransparent($image);
+                    if ($transparency >= 0) {
+                        $transparencyIndex = \imagecolorat($image, 0, 0);
+                        $transparencyColor = \imagecolorsforindex($image, $transparencyIndex);
+                        $transparency = \imagecolorallocate($imageCrop, $transparencyColor['red'], $transparencyColor['green'], $transparencyColor['blue']);
+                        \imagefill($imageCrop, 0, 0, $transparency);
+                        \imagecolortransparent($imageCrop, $transparency);
+                        \imagefill($imageResized, 0, 0, $transparency);
+                        \imagecolortransparent($imageResized, $transparency);
+                    } elseif ($info[2] == IMAGETYPE_PNG) {
+                        \imagealphablending($imageCrop, false);
+                        \imagealphablending($imageResized, false);
+                        $color = \imagecolorallocatealpha($imageCrop, 0, 0, 0, 127);
+                        \imagefill($imageCrop, 0, 0, $color);
+                        \imagesavealpha($imageCrop, true);
+                        \imagefill($imageResized, 0, 0, 127);
+                        \imagesavealpha($imageResized, true);
+                    }
+                }
+    
+                \imagecopyresampled($imageCrop, $image, 0, 0, 0, 0, $widthCrop, $heightCrop, $oldWidth, $oldHeight);
+                \imagecopyresampled($imageResized, $image, 0, 0, ($widthCrop - $width) / 2, ($heightCrop - $height) / 2, $width, $height, $width, $height);
+    
+                switch ($info[2]) {
+                    case IMAGETYPE_GIF: \imagegif(($options['crop'])? $imageResized : $imageCrop, $output, $options['quality']); break;
+                    case IMAGETYPE_JPEG: \imagejpeg(($options['crop'])? $imageResized : $imageCrop, $output, $options['quality']); break;
+                    case IMAGETYPE_PNG: \imagepng(($options['crop'])? $imageResized : $imageCrop, $output, 9); break;
+                    default: return false;
+                }
+            }
         }
     }
 
