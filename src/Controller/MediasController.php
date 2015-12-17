@@ -35,7 +35,7 @@ class MediasController extends AppController
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->layout = 'uploader';
+        $this->viewBuilder()->layout('uploader');
         if (in_array('Security', $this->components()->loaded())) {
             $this->Security->config('unlockedActions', [ 'index', 'edit', 'upload', 'order', 'thumb', 'update', 'delete' ]);
         }
@@ -67,7 +67,7 @@ class MediasController extends AppController
                 'ref' => $ref
             ]
         ])->toArray();
-        $medias = ! empty($medias) ? $medias : null;
+        $medias = ! empty($medias) ? $medias : [];
         $thumbID = false;
         if ($this->$ref->hasField('media_id')) {
             $entity = $this->$ref->get($refId);
@@ -153,7 +153,7 @@ class MediasController extends AppController
         $editor = isset($this->request->query['editor']) ? $this->request->query['editor'] : false;
         $id = isset($this->request->query['id']) ? $this->request->query['id'] : false;
         $this->set(\compact('media', 'thumbID', 'editor', 'id'));
-        $this->layout = 'json';
+        $this->viewBuilder()->layout('json');
         $this->render('media');
     }
 
@@ -277,7 +277,7 @@ class MediasController extends AppController
      */
     public function order()
     {
-        $this->layout = null;
+        $this->viewBuilder()->layout('');
         $this->autoRender = false;
         if (! $this->request->is('ajax')) {
             throw new BadRequestException();
