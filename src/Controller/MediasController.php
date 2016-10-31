@@ -154,7 +154,7 @@ class MediasController extends AppController
         $id = isset($this->request->query['id']) ? $this->request->query['id'] : false;
         $this->set(\compact('media', 'thumbID', 'editor', 'id'));
         $this->viewBuilder()->layout('json');
-        $this->render('media');
+        $this->render('media2');
     }
 
     /**
