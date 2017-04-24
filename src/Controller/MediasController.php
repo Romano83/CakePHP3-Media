@@ -56,8 +56,9 @@ class MediasController extends AppController
             throw new ForbiddenException();
         }
         $this->loadModel($ref);
+        $refc = array_pop(array_filter( explode('.', $ref) ));
         $this->set(compact('ref', 'refId'));
-        if (! in_array('Media', $this->$ref->Behaviors()->loaded())) {
+        if (! in_array('Media', $this->$refc->Behaviors()->loaded())) {
             return $this->render('nobehavior');
         }
         $id = isset($this->request->query['id']) ? $this->request->query['id'] : false;
@@ -69,11 +70,11 @@ class MediasController extends AppController
         ])->toArray();
         $medias = ! empty($medias) ? $medias : [];
         $thumbID = false;
-        if ($this->$ref->hasField('media_id')) {
-            $entity = $this->$ref->get($refId);
+        if ($this->$refc->hasField('media_id')) {
+            $entity = $this->$refc->get($refId);
             $thumbID = $entity->media_id;
         }
-        $extensions = $this->$ref->medias['extensions'];
+        $extensions = $this->$refc->medias['extensions'];
         $editor = isset($this->request->query['editor']) ? $this->request->query['editor'] : false;
         $this->set(compact('id', 'medias', 'thumbID', 'editor', 'extensions'));
     }
