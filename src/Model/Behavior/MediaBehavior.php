@@ -45,7 +45,7 @@ class MediaBehavior extends Behavior
             'className' => 'Media.Medias',
             'foreignKey' => 'ref_id',
             'order' => 'Media.position ASC',
-            'conditions' => 'ref = "' . $this->_table->alias() . '"',
+            'conditions' => 'ref = "' . $this->_table->registryAlias() . '"',
             'dependant' => true
         ]);
         if ($this->_table->hasField('media_id')) {
