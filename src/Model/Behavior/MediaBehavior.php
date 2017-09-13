@@ -15,17 +15,22 @@ class MediaBehavior extends Behavior
      * @var array
      */
     protected $config = [
-        'path' => 'img/uploads/%y/%m/%f',
-        'extensions' => [
-            'jpg',
-            'png'
-        ],
-        'limit' => 0,
-        'max_width' => 0,
-        'max_height' => 0,
-        'size' => 0
+        'path' => 'img/uploads/%y/%m/%f',       // default upload path relative to webroot folder (see below for path parameters)
+        'extensions' => ['jpg', 'png'],         // array of authorized extensions (lowercase)
+        'limit' => 0,                           // limit number of upload file. Default: 0 (no limit)
+        'max_width' => 0,                       // maximum authorized width for uploaded pictures. Default: 0 (no limitation) 
+        'max_height' => 0,                      // maximum authorized height for uploaded pictures. Default: 0 (no limitation)
+        'size' => 0,                            // maximum autorized size for uploaded pictures (in kb). Default: 0 (no limitation)
+        'resize' => [                           // Array of options to resize images or false
+            'sizes' => [
+                'small'     => '150x150',
+                'medium'    => '350x350',
+                'large'     => '1024x1024'
+            ],
+            'crop' => false,                    // ipmage crop or resize proportionally
+            'quality' => 100                    // image quality after resize/crop (for .jpg images)
+        ]
     ];
- // in kB
     
     /**
      * Add HasMany association in table whith this behavior.

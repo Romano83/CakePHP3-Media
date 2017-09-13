@@ -96,6 +96,9 @@
 			$gallery.addClass('active in');
 		},
 		success: function (file, data) {
+			if (!typeof data === 'object') {
+				data = $.parseJSON(data);
+			}
 			if(data.error){
 				$errorModal.on('show.bs.modal', function(e){
 					$(this).find('.modal-body').text(data.error.file.global);
