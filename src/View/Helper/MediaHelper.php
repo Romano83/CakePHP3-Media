@@ -1,6 +1,7 @@
 <?php
 namespace Media\View\Helper;
 
+use Cake\Core\Configure;
 use Cake\View\Helper;
 use Cake\View\View;
 
@@ -55,6 +56,13 @@ class MediaHelper extends Helper
         $this->Html->script('/media/js/tinymce/editor.js', [
             'block' => true
         ]);
+	    $configure = Configure::check('Editor') ? Configure::read('Editor') : null;
+	    if ($configure) $configure = json_encode($configure, JSON_PRETTY_PRINT);
+
+	    $this->Html->scriptStart(['block' => true]);
+        echo "initTinymce(".$configure.");";
+	    $this->Html->scriptEnd();
+
         return $this->textarea($fieldName, $ref, $refId, 'tinymce', $options);
     }
 
@@ -112,14 +120,17 @@ class MediaHelper extends Helper
         }
         return $html;
     }
-    /**
-     * Find the resized image if exists or the original one
-     *
-     * @param string $image
-     *          path to the image
-     * @param array $options
-     *         array of options
-     */
+
+	/**
+	 * Find the resized image if exists or the original one
+	 *
+	 * @param string $image
+	 *          path to the image
+	 * @param array  $options
+	 *          array of options
+	 *
+	 * @return string
+	 */
     public function image($image, $options = [])
     {
         $width = isset($options['width']) ? $options['width'] : null;
