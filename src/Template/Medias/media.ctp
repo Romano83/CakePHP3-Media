@@ -1,4 +1,8 @@
-<?php $sizes = getimagesize(WWW_ROOT.trim($media->file, '/'));  ?>
+<?php
+    if (file_exists(WWW_ROOT.trim($media->file, '/'))) {
+	    $sizes = getimagesize(WWW_ROOT.trim($media->file, '/'));
+    }
+?>
 
 <div
 	class="gallery-item <?php if($thumbID && $media->id === $thumbID): ?>is-thumbnail<?php endif; ?>"
@@ -15,7 +19,9 @@
 			<div class="details">
 				<span class="file-title"><strong><?= basename($media->file); ?></strong></span>
 				<?php if($media->file_type == 'pic'): ?>
-				<span class="file-dimension"><?= $sizes[0].' x '.$sizes[1]; ?></span>
+                    <?php if (isset($sizes)): ?>
+				    <span class="file-dimension"><?= $sizes[0].' x '.$sizes[1]; ?></span>
+                    <?php endif; ?>
 				<!--<a class="edit-file" href="#"><?= __d('media','Modify picture'); ?></a>-->
 				<?php endif; ?>
 				<?= $this->Html->link(__d('media','Delete definitively'), ['action'=>'delete',$media->id], ['class'=>'delete red']); ?>

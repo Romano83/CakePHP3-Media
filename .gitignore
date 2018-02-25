@@ -6,3 +6,5 @@
 /css/style.scss
 .buildpath
 .project
+.idea
+*.log

@@ -5,22 +5,22 @@ use Cake\Event\Event;
 use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\ForbiddenException;
 use Cake\Network\Exception\NotFoundException;
-use Cake\Routing\Router;
+use Cake\ORM\Entity;
 
 class MediasController extends AppController
 {
 
     /**
      *
-     * @param Cake\ORM\Table $ref            
-     * @param int $refId            
+     * @param string $ref
+     * @param int    $refId
      *
      * @return bool
      */
-    public function canUploadMedias($ref, $refId)
+    public static function canUploadMedias($ref, $refId)
     {
         if (method_exists('App\Controller\AppController', 'canUploadMedias')) {
-            return \App\Controller\AppController::canUploadMedias($ref, $refId);
+	        return call_user_func_array(['App\Controller\AppController', 'canUploadMedias'], [$ref, $refId]);
         } else {
             return false;
         }
@@ -35,20 +35,19 @@ class MediasController extends AppController
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->layout = 'uploader';
+	    $this->viewBuilder()->setLayout('uploader');
         if (in_array('Security', $this->components()->loaded())) {
-            $this->Security->config('unlockedActions', [ 'index', 'edit', 'upload', 'order', 'thumb', 'update', 'delete' ]);
+            $this->Security->setConfig('unlockedActions', [ 'index', 'edit', 'upload', 'order', 'thumb', 'update', 'delete' ]);
         }
     }
 
     /**
      *
-     * @param Cake\ORM\Entity $ref            
+     * @param string $ref
      * @param int $refId            
      *
-     * @throws Cake\Network\Exception\ForbiddenException
-     *
-     * @return array
+     * @throws \Cake\Network\Exception\ForbiddenException
+     * @return \Cake\Http\Response|void
      */
     public function index($ref, $refId)
     {
@@ -60,7 +59,7 @@ class MediasController extends AppController
         if (! in_array('Media', $this->$ref->Behaviors()->loaded())) {
             return $this->render('nobehavior');
         }
-        $id = isset($this->request->query['id']) ? $this->request->query['id'] : false;
+        $id = $this->request->getQuery('id') ?? false;
         $medias = $this->Medias->find('all', [
             'conditions' => [
                 'ref_id' => $refId,
@@ -74,7 +73,7 @@ class MediasController extends AppController
             $thumbID = $entity->media_id;
         }
         $extensions = $this->$ref->medias['extensions'];
-        $editor = isset($this->request->query['editor']) ? $this->request->query['editor'] : false;
+        $editor = $this->request->getQuery('editor') ?? false;
         $this->set(compact('id', 'medias', 'thumbID', 'editor', 'extensions'));
     }
 
@@ -85,11 +84,11 @@ class MediasController extends AppController
      * @throws \Cake\Network\Exception\NotFoundException
      * @throws \Cake\Network\Exception\ForbiddenException
      *
-     * @return void
+     * @return \Cake\Http\Response|void
      */
     public function edit($id = null)
     {
-        $id = $this->request->query['media_id'];
+        $id = $this->request->getQuery('media_id');
         $data = [];
         if ($id) {
             $media = $this->Medias->find()
@@ -107,7 +106,7 @@ class MediasController extends AppController
             $data['alt'] = basename($media['file']);
             $data['class'] = '';
             $data['caption'] = $media['caption'];
-            $data['editor'] = isset($this->request->query['editor']) ? $this->request->query['editor'] : false;
+            $data['editor'] = $this->request->getQuery('editor') ?? false;
             $data['ref'] = $media->ref;
             $data['ref_id'] = $media->ref_id;
             $data['type'] = $media->file_type;
@@ -118,12 +117,12 @@ class MediasController extends AppController
 
     /**
      *
-     * @param Cake\ORM\Entity $ref            
-     * @param int $refId            
+     * @param string $ref
+     * @param int    $refId
      *
      * @throws \Cake\Network\Exception\ForbiddenException
      *
-     * @return void
+     * @return \Cake\Http\Response|void
      */
     public function upload($ref, $refId)
     {
@@ -134,26 +133,28 @@ class MediasController extends AppController
         $data = [
             'ref' => $ref,
             'ref_id' => $refId,
-            'file' => $this->request->data
+            'file' => $this->request->getData()
         ];
+        /** @var Entity $media */
         $media = $this->Medias->newEntity();
-        $media = $this->Medias->patchEntity($media, $data, [
+	    $media = $this->Medias->patchEntity($media, $data, [
             'validate' => 'default'
         ]);
-        if ($media->errors()) {
-            echo json_encode([
-                'error' => $media->errors()
-            ]);
-            return;
+	    if ($media->getErrors()) {
+		    $response = $this->response->withType('application/json')
+               ->withStringBody(json_encode([
+                   'error' => $media->getErrors()
+               ]));
+		    return $response;
         } else {
-            $media = $this->Medias->save($media, $this->request->data);
+	        $media = $this->Medias->save($media, $this->request->getData());
         }
-        $this->loadModel($ref);
-        $thumbID = $this->$ref->hasField('media_id');
-        $editor = isset($this->request->query['editor']) ? $this->request->query['editor'] : false;
-        $id = isset($this->request->query['id']) ? $this->request->query['id'] : false;
-        $this->set(\compact('media', 'thumbID', 'editor', 'id'));
-        $this->layout = 'json';
+	    $this->loadModel($ref);
+	    $thumbID = $this->$ref->hasField('media_id');
+	    $editor = $this->request->getQuery('editor') ?? false;
+	    $id = $this->request->getQuery('id') ?? false;
+	    $this->set(\compact('media', 'thumbID', 'editor', 'id'));
+	    $this->viewBuilder()->setLayout('json');
         $this->render('media');
     }
 
@@ -189,8 +190,8 @@ class MediasController extends AppController
                 throw new ForbiddenException();
             }
             $data = [];
-            $data['name'] = $this->request->data['name'] ? $this->request->data['name'] : null;
-            $data['caption'] = $this->request->data['caption'] ? $this->request->data['caption'] : null;
+            $data['name'] = $this->request->getData('name') ?? null;
+            $data['caption'] = $this->request->getData('caption') ?? null;
             $media = $this->Medias->patchEntity($media, $data, [
                 'validate' => false
             ]);
@@ -277,13 +278,14 @@ class MediasController extends AppController
      */
     public function order()
     {
-        $this->layout = null;
+	    $this->viewBuilder()->setLayout('');
         $this->autoRender = false;
         if (! $this->request->is('ajax')) {
             throw new BadRequestException();
         }
-        if (! empty($this->request->data['Media'])) {
-            $id = key($this->request->data['Media']);
+        $data = $this->request->getData('Media');
+        if (!empty($data)) {
+            $id = key($data);
             $media = $this->Medias->get($id, [
                 'fields' => [
                     'ref',
@@ -293,12 +295,10 @@ class MediasController extends AppController
             if (! $this->canUploadMedias($media->ref, $media->ref_id)) {
                 throw new ForbiddenException();
             }
-            foreach ($this->request->data['Media'] as $k => $v) {
-                $media = $this->Medias->get($k);
-                $media->position = $v;
-                $media = $this->Medias->save($media, [
-                    'validate' => false
-                ]);
+            foreach ($data as $k => $v) {
+                $entity = $this->Medias->get($k);
+                $entity->position = $v;
+	            $this->Medias->save( $entity, [ 'atomic' => false ] );
             }
         }
     }

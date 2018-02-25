@@ -6,10 +6,7 @@ use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
 use Cake\Routing\DispatcherFactory;
 
-require_once 'vendor/autoload.php';
-
 // Path constants to a few helpful things.
-define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', dirname(__DIR__) . DS);
 define('CAKE_CORE_INCLUDE_PATH', ROOT . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
 define('CORE_PATH', ROOT . 'vendor' . DS . 'cakephp' . DS . 'cakephp' . DS);
@@ -58,7 +55,7 @@ Configure::write('Session', [
 	'defaults' => 'php'
 ]);
 
-Cache::config([
+Cache::setConfig([
 	'_cake_core_' => [
 		'engine' => 'File',
 		'prefix' => 'cake_core_',
@@ -80,25 +77,20 @@ Cache::config([
 if (!getenv('db_class')) {
 	putenv('db_class=Cake\Database\Driver\Sqlite');
 	putenv('db_dsn=sqlite::memory:');
-	
-// 	putenv('db_database=test');
-// 	putenv('db_login=root');
-// 	putenv('db_password=root');
 }
 
 
-ConnectionManager::config('test', [
+ConnectionManager::setConfig('test', [
 	'className' => 'Cake\Database\Connection',
 	'driver' => getenv('db_class'),
-  'dsn' => getenv('db_dsn'),
-// 	'host' => 'localhost',
+    'dsn' => getenv('db_dsn'),
 	'database' => getenv('db_database'),
 	'username' => getenv('db_login'),
 	'password' => getenv('db_password'),
 	'timezone' => 'UTC'
 ]);
 
-Log::config([
+Log::setConfig([
 	'debug' => [
 		'engine' => 'Cake\Log\Engine\FileLog',
 		'levels' => ['notice', 'info', 'debug'],

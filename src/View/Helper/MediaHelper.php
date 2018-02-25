@@ -127,7 +127,7 @@ class MediaHelper extends Helper
         if ($width && $height) {
             $pathinfo = \pathinfo($image);
             $newImg = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '_' . $width . 'x' . $height . '.' . $pathinfo['extension'];
-            if (\file_exists(\trim($newImg, '/'))) {
+            if (\file_exists($newImg)) {
                 $image = $newImg;
             }
         }

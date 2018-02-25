@@ -15,28 +15,37 @@ class MediaBehavior extends Behavior
      * @var array
      */
     protected $config = [
-        'path' => 'img/uploads/%y/%m/%f',       // default upload path relative to webroot folder (see below for path parameters)
+        'path' => 'img/upload/%y/%m/%f',        // default upload path relative to webroot folder (see below for path parameters)
         'extensions' => ['jpg', 'png'],         // array of authorized extensions (lowercase)
         'limit' => 0,                           // limit number of upload file. Default: 0 (no limit)
         'max_width' => 0,                       // maximum authorized width for uploaded pictures. Default: 0 (no limitation) 
         'max_height' => 0,                      // maximum authorized height for uploaded pictures. Default: 0 (no limitation)
-        'size' => 0,                            // maximum autorized size for uploaded pictures (in kb). Default: 0 (no limitation)
+        'size' => 0,                            // maximum authorized size for uploaded pictures (in kb). Default: 0 (no limitation)
         'resize' => [                           // Array of options to resize images or false
             'sizes' => [
-                'small'     => '150x150',
-                'medium'    => '350x350',
-                'large'     => '1024x1024'
+                'small'  => [
+                    'width'  => '150',
+                    'height' => '150',
+                    'crop'   => true
+                ],
+                'medium' => [
+                    'width'  => '350',
+                    'height' => '350',
+                    'crop'   => true
+                ],
+                'large'  => [
+                    'width'  => '1024',
+                    'height' => '1024',
+                    'crop'   => false
+                ],
             ],
-            'crop' => false,                    // ipmage crop or resize proportionally
-            'quality' => 100                    // image quality after resize/crop (for .jpg images)
+            'quality' => 100                   // image quality after resize/crop (for .jpg images)
         ]
     ];
     
     /**
      * Add HasMany association in table whith this behavior.
      * If database table has 'media_id' field, the behavior add belongsTo association
-     *
-     * (non-PHPdoc)
      *
      * @see \Cake\ORM\Behavior::initialize()
      * @param array $config
@@ -50,7 +59,7 @@ class MediaBehavior extends Behavior
             'className' => 'Media.Medias',
             'foreignKey' => 'ref_id',
             'order' => 'Media.position ASC',
-            'conditions' => 'ref = "' . $this->_table->alias() . '"',
+            'conditions' => 'ref = "' . $this->_table->getRegistryAlias() . '"',
             'dependant' => true
         ]);
         if ($this->_table->hasField('media_id')) {
@@ -61,28 +70,4 @@ class MediaBehavior extends Behavior
         }
     }
 
-    /**
-     *
-     * @param \Cake\Event\Event $event            
-     * @param \Cake\ORM\Entity $entity            
-     * @param \ArrayObject $options            
-     * @return void
-     */
-    public function afterSave(Event $event, Entity $entity, \ArrayObject $options)
-    {
-        if (! empty($entity->thumb->name)) {
-            $file = $entity->thumb;
-            $mediaId = $entity->media_id;
-            
-            if ($mediaId != 0) {
-                $entity->Media->delete($mediaId);
-            }
-            $entity->Media->save([
-                'ref_id' => $entity->id,
-                'ref' => $entity->name,
-                'file' => $file
-            ]);
-            $entity->saveField('media_id', $entity->Media->id);
-        }
-    }
 }
