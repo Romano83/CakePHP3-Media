@@ -3,11 +3,13 @@
 	"description" : "Media plugin for CakePHP 3",
 	"type" : "cakephp-plugin",
 	"require" : {
-		"php" : ">=5.4.0"
+		"php" : ">=7.0",
+		"intervention/image": "^2.4",
+		"spatie/image-optimizer": "^1.0"
 	},
 	"require-dev" : {
-		"cakephp/cakephp" : "~3.1",
-		"phpunit/phpunit" : "*",
+		"cakephp/cakephp" : "^3.4",
+		"phpunit/phpunit" : "^5.7|^6.0",
 		"cakephp/cakephp-codesniffer" : "2.*"
 	},
 	"suggest" : {

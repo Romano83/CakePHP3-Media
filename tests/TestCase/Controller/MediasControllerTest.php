@@ -1,6 +1,8 @@
 <?php
 namespace Media\Test\TestCase\Controller;
 
+use Cake\Filesystem\File;
+use Cake\Filesystem\Folder;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 
@@ -9,6 +11,23 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class MediasControllerTest extends IntegrationTestCase
 {
+
+	/**
+	 * @var string
+	 */
+	private $image;
+	/**
+	 * @var string
+	 */
+	private $resizedImage;
+	/**
+	 * @var \Media\Model\Table\MediasTable
+	 */
+	private $Medias;
+	/**
+	 * @var string
+	 */
+	private $uploadDir;
 
     /**
      * Fixtures
@@ -33,16 +52,8 @@ class MediasControllerTest extends IntegrationTestCase
             'className' => 'Media\Model\Table\MediasTable'
         ];
         $this->Medias = TableRegistry::get('Medias', $config);
-        $this->Medias = $this->getMockForModel('Media.Medias', array(
-            'move_uploaded_file'
-        ));
-        $this->Medias->expects($this->any())
-            ->method('move_uploaded_file')
-            ->will($this->returnCallback([
-            $this,
-            'testMoveUploadedFile'
-        ]));
         $this->Posts = TableRegistry::get('Posts');
+        $this->uploadDir = WWW_ROOT . 'img' . DS . 'upload' . DS . date('Y') . DS . date('m');
     }
 
     /*
@@ -55,26 +66,6 @@ class MediasControllerTest extends IntegrationTestCase
         unset($this->Medias);
         unset($this->Posts);
         TableRegistry::clear();
-    }
-
-    /**
-     * Test canUploadMedias method
-     *
-     * @return void
-     */
-    public function testCanUploadMedias()
-    {
-        
-    }
-
-    /**
-     * Test beforeFilter method
-     *
-     * @return void
-     */
-    public function testBeforeFilter()
-    {
-        
     }
 
     /**
@@ -97,7 +88,7 @@ class MediasControllerTest extends IntegrationTestCase
     public function testIndexWithCanUploadMediasMethod()
     {
         $this->get('/media/medias/index/Posts/1');
-        
+
         $this->assertResponseOK();
     }
 
@@ -109,10 +100,10 @@ class MediasControllerTest extends IntegrationTestCase
     public function testIndexWithoutBehaviorLoaded()
     {
         $this->get('/media/medias/index/Posts/1');
-        
+
         $this->assertResponseOk();
-        $this->assertResponseContains('<h1>Error</h1>');
-        $this->assertResponseContains("<p>Table {0}Table doesn't have 'Media' behavior</p>");
+        $this->assertResponseContains('public function initialize(array $config)');
+        $this->assertResponseContains('$this->addBehavior(\'Media.Media\')');
     }
 
     /**
@@ -122,16 +113,25 @@ class MediasControllerTest extends IntegrationTestCase
      */
     public function testListingMedias()
     {
-        copy($this->image, WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . 'testHelper.png');
-        copy($this->resizedImage, WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . 'testHelper_50x50.jpg');
-        $this->Posts->addBehavior('Media.Media');
+	    new Folder($this->uploadDir, true, 0777);
+    	$file = new File($this->image, false);
+    	$file->copy($this->uploadDir . DS . 'testHelper.png');
+    	$resizedFile = new File($this->resizedImage);
+    	$resizedFile->copy($this->uploadDir . DS . 'testHelper_50x50.jpg');
+
+        $this->Posts->addBehavior('Media.Media', ['resize' => false]);
         $this->get('/media/medias/index/Posts/1');
-        
+
         $this->assertResponseOk();
         $this->assertEquals(2, count($this->viewVariable('medias')));
-        $this->assertEquals(1, count($this->viewVariable('thumbID')));
-        unlink(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . 'testHelper.png');
-        unlink(WWW_ROOT . 'img' . DS . 'upload' . DS . '2015' . DS . '08' . DS . 'testHelper_50x50.jpg');
+	    $this->assertTrue((bool)$this->viewVariable('thumbID'));
+
+	    $file = new File($this->uploadDir . DS . 'testHelper.png');
+	    $file->delete();
+	    $resizedFile = new File($this->uploadDir . DS . 'testHelper_50x50.jpg');
+	    $resizedFile->delete();
+	    $folder = new Folder($this->uploadDir, false);
+	    $folder->delete();
     }
 
     /**
@@ -144,7 +144,7 @@ class MediasControllerTest extends IntegrationTestCase
         $this->get('media/medias/edit/?editor=tinymce&id=content&media_id=1&alt=&class=');
         $this->assertResponseOk();
         $expected = [
-            'src' => 'img/upload/2015/08/testHelper.png',
+            'src' => 'img/upload/'.date('Y').'/'.date('m').'/testHelper.png',
             'editor' => 'tinymce',
             'ref' => 'Posts',
             'ref_id' => 1,
@@ -166,7 +166,7 @@ class MediasControllerTest extends IntegrationTestCase
     public function testEditWithWrongId()
     {
         $this->get('media/medias/edit/?editor=tinymce&id=content&media_id=5&alt=&class=');
-        
+
         $this->assertResponseError();
         $this->assertResponseCode(404);
     }
@@ -179,7 +179,7 @@ class MediasControllerTest extends IntegrationTestCase
     public function testEditWithoutPermission()
     {
         $this->get('media/medias/edit/?editor=tinymce&id=content&media_id=4&alt=&class=');
-        
+
         $this->assertResponseError();
         $this->assertResponseCode(403);
     }
@@ -197,11 +197,11 @@ class MediasControllerTest extends IntegrationTestCase
                 'type' => 'image/png',
                 'tmp_name' => $this->image,
                 'error' => UPLOAD_ERR_OK,
-                'size' => 52085
+                'size' => 52015
             ]
         ];
         $this->post('/media/medias/upload/Pages/2', $data);
-        
+
         $this->assertResponseError();
         $this->assertResponseCode(403);
     }
@@ -213,16 +213,7 @@ class MediasControllerTest extends IntegrationTestCase
      */
     public function testUpload()
     {
-        $this->Posts->addBehavior('Media.Media');
-        $this->Medias = $this->getMockForModel('Media.Medias', array(
-            'move_uploaded_file'
-        ));
-        $this->Medias->expects($this->once())
-            ->method('move_uploaded_file')
-            ->will($this->returnCallback([
-            $this,
-            'testMoveUploadedFile'
-        ]));
+        $this->Posts->addBehavior('Media.Media', ['resize' => false]);
         $data = [
             'file' => [
                 'name' => 'testHelper.png',
@@ -233,54 +224,50 @@ class MediasControllerTest extends IntegrationTestCase
             ]
         ];
         $this->post('/media/medias/upload/Posts/1', $data);
-        
+
         $media = $this->Medias->find()
             ->where([
-            'file LIKE' => '%testHelper.png%'
-        ])
+                'file LIKE' => '%testHelper.png%'
+            ])
             ->first();
         $this->assertEquals(1, $media->ref_id);
         $this->assertEquals('Posts', $media->ref);
-        $this->assertEquals(true, \file_exists(WWW_ROOT . trim($media->file, '/')));
-        $this->Medias->delete($media);
+        $this->assertEquals('img' . DS . 'upload' . DS . date('Y') . DS . date('m') . DS . 'testHelper.png', $media->file);
     }
-    
-    // public function testUploadWithWrongExtension() {
-    // $this->Posts->addBehavior('Media.Media', [
-    // 'path' => 'img' . DS . 'upload' . DS . '%y' . DS . '%m' . DS. '%f',
-    // 'extensions' => ['jpg', 'png', 'gif'],
-    // 'limit' => 0,
-    // 'maw_width' => 0,
-    // 'maw_height' => 0,
-    // 'size' => 0
-    // ]);
-    // $this->Medias = $this->getMockForModel('Media.Medias', array('move_uploaded_file'));
-    // $this->Medias->expects($this->any())->method('move_uploaded_file')->will($this->returnCallback('test_move_uploaded_file'));
-    // $this->image = TMP . 'testHelper.png';
-    // $data = [
-    // 'file' => [
-    // 'name' => 'testHelper.pdf',
-    // 'type' => 'image/png',
-    // 'tmp_name' => $this->image,
-    // 'error' => UPLOAD_ERR_OK,
-    // 'size' => 52085
-    // ]
-    // ];
-    // $this->post('/media/medias/upload/Posts/1', $data);
-    // $this->assertResponseOk();
-    
-    // // $this->configRequest([
-    // // 'headers' => ['Accept' => 'application/json']
-    // // ]);
-    // // $expected = ['error' => [
-    // // 'file' => [
-    // // 'global' => "You don't have the permission to upload this filetype (jpg, png, gif only)"
-    // // ]
-    // // ]];
-    // // $expected = \json_encode($expected, JSON_PRETTY_PRINT);
-    // // $this->assertEquals($expected, $this->_response->body());
-    // }
-    
+
+    public function testUploadWithWrongExtension() {
+		$this->Posts->addBehavior('Media.Media', [
+			'extensions' => ['jpg', 'png', 'gif'],
+			'resize' => false
+		]);
+		$data = [
+			'file' => [
+				'name' => 'testHelper.pdf',
+				'type' => 'image/png',
+				'tmp_name' => $this->image,
+				'error' => UPLOAD_ERR_OK,
+				'size' => 52085
+			]
+		];
+		$this->post('/media/medias/upload/Posts/1', $data);
+		$this->assertResponseOk();
+		$this->configRequest([
+			'headers' => [
+				'Accept' => 'application/json',
+				'Accept-Language' => 'en-US,en;q=0.5'
+			]
+		]);
+		$expected = [
+			'error' => [
+				'file' => [
+					'global' => "You don't have the permission to upload this filetype (jpg, png, gif only)"
+				]
+			]
+		];
+		$response = json_decode($this->_response->body(), true);
+		$this->assertEquals($expected, $response);
+    }
+
     /**
      * Test testUpdateWithoutAjaxRequest
      *
@@ -336,7 +323,7 @@ class MediasControllerTest extends IntegrationTestCase
     public function testUpdateWithoutPermission()
     {
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-        $this->Posts->addBehavior('Media.Media');
+        $this->Posts->addBehavior('Media.Media', ['resize' => false]);
         $data = [
             'name' => 'New title',
             'caption' => ''
@@ -354,7 +341,7 @@ class MediasControllerTest extends IntegrationTestCase
     public function testUpdateWithName()
     {
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-        $this->Posts->addBehavior('Media.Media');
+        $this->Posts->addBehavior('Media.Media', ['resize' => false]);
         $data = [
             'name' => 'New title',
             'caption' => ''
@@ -373,7 +360,7 @@ class MediasControllerTest extends IntegrationTestCase
     public function testUpdateWithCaption()
     {
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-        $this->Posts->addBehavior('Media.Media');
+        $this->Posts->addBehavior('Media.Media', ['resize' => false]);
         $data = [
             'name' => '',
             'caption' => 'New caption'
@@ -392,7 +379,7 @@ class MediasControllerTest extends IntegrationTestCase
     public function testUpdateWithNameAndCaption()
     {
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-        $this->Posts->addBehavior('Media.Media');
+        $this->Posts->addBehavior('Media.Media', ['resize' => false]);
         $data = [
             'name' => 'New title',
             'caption' => 'New caption'
@@ -411,7 +398,8 @@ class MediasControllerTest extends IntegrationTestCase
      */
     public function testDeleteWithoutAjaxRequest()
     {
-        $this->delete('/media/medias/delete/1');
+	    $_SERVER['HTTP_X_REQUESTED_WITH'] = '';
+        $this->get('/media/medias/delete/1');
         $this->assertResponseError();
         $this->assertResponseCode(400);
     }
@@ -424,7 +412,7 @@ class MediasControllerTest extends IntegrationTestCase
     public function testDeleteWithoutGoodId()
     {
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-        $this->delete('/media/medias/delete/5');
+        $this->get('/media/medias/delete/5');
         $this->assertResponseCode(404);
     }
 
@@ -436,7 +424,7 @@ class MediasControllerTest extends IntegrationTestCase
     public function testDeleteWithoutPermission()
     {
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-        $this->delete('/media/medias/delete/4');
+        $this->get('/media/medias/delete/4');
         $this->assertResponseError();
         $this->assertResponseCode(403);
     }
@@ -449,7 +437,7 @@ class MediasControllerTest extends IntegrationTestCase
     public function testDeleteWithGoodId()
     {
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-        $this->delete('/media/medias/delete/1');
+        $this->get('/media/medias/delete/1');
         $this->assertResponseOk();
     }
 
@@ -490,6 +478,7 @@ class MediasControllerTest extends IntegrationTestCase
         $this->assertRedirectContains('/media/medias/index/Posts/1');
     }
 
+
     /**
      * Test testOrderWithoutAjaxRequest
      *
@@ -497,34 +486,46 @@ class MediasControllerTest extends IntegrationTestCase
      */
     public function testOrderWithoutAjaxRequest()
     {
+	    $_SERVER['HTTP_X_REQUESTED_WITH'] = '';
         $this->get('/media/medias/order');
-        $this->getExpectedException('BadRequestException');
+        $this->getExpectedException();
         $this->assertResponseError();
         $this->assertResponseCode(400);
     }
 
     /**
-     * Test testOrderWithoutAjaxRequest
+     * Test testOrderWithAjaxRequest
      *
      * @return void
      */
-    public function testOrder()
+    public function testOrderWithAjaxRequest()
     {
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
         $data = [
             'Media' => [
                 1 => 0,
                 2 => 1,
-                3 => 2
             ]
         ];
         $this->post('/media/medias/order', $data);
-        $media = $this->Medias->find('list', [
+        $medias = $this->Medias->find('list', [
             'keyField' => 'id',
             'valueField' => 'position'
         ])->toArray();
-        // $this->assertEquals(0, $media[1]);
-        // $this->assertEquals(1, $media[2]);
-        // $this->assertEquals(2, $media[3]);
+		$this->assertEquals(0, $medias[1]);
+		$this->assertEquals(1, $medias[2]);
     }
+
+	public function testOrderWithoutPermissions() {
+		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+		$data = [
+			'Media' => [
+				4 => 0,
+			]
+		];
+		$this->post('/media/medias/order', $data);
+		$this->assertResponseError();
+		$this->assertResponseCode(403);
+	}
+
 }

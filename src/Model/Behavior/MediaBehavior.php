@@ -23,15 +23,32 @@ class MediaBehavior extends Behavior
         'limit' => 0,
         'max_width' => 0,
         'max_height' => 0,
-        'size' => 0
+        'size' => 0,
+		'resize' => [
+		    'sizes' => [
+			    'small'  => [
+				    'width'  => '150',
+				    'height' => '150',
+				    'crop'   => true
+			    ],
+			    'medium' => [
+				    'width'  => '350',
+				    'height' => '350',
+				    'crop'   => true
+			    ],
+			    'large'  => [
+				    'width'  => '1024',
+				    'height' => '1024',
+				    'crop'   => false
+			    ],
+		    ],
+		    'quality' => 100
+        ]
     ];
- // in kB
     
     /**
      * Add HasMany association in table whith this behavior.
      * If database table has 'media_id' field, the behavior add belongsTo association
-     *
-     * (non-PHPdoc)
      *
      * @see \Cake\ORM\Behavior::initialize()
      * @param array $config
@@ -45,7 +62,7 @@ class MediaBehavior extends Behavior
             'className' => 'Media.Medias',
             'foreignKey' => 'ref_id',
             'order' => 'Media.position ASC',
-            'conditions' => 'ref = "' . $this->_table->alias() . '"',
+            'conditions' => 'ref = "' . $this->_table->getAlias() . '"',
             'dependant' => true
         ]);
         if ($this->_table->hasField('media_id')) {
@@ -68,7 +85,7 @@ class MediaBehavior extends Behavior
         if (! empty($entity->thumb->name)) {
             $file = $entity->thumb;
             $mediaId = $entity->media_id;
-            
+
             if ($mediaId != 0) {
                 $entity->Media->delete($mediaId);
             }

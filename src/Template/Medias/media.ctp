@@ -1,10 +1,14 @@
-<?php $sizes = getimagesize(WWW_ROOT.trim($media->file, '/'));  ?>
+<?php
+    if (file_exists(WWW_ROOT.trim($media->file, '/'))) {
+	    $sizes = getimagesize(WWW_ROOT.trim($media->file, '/'));
+    }
+?>
 
 <div
 	class="gallery-item <?php if($thumbID && $media->id === $thumbID): ?>is-thumbnail<?php endif; ?>"
 	id="gallery-<?= $media->id; ?>" data-id="<?= $media->id; ?>">
-	<div class="gallery-item-thumb">
-		<?= $this->Html->image($media->file_icon); ?>
+    <div class="gallery-item-thumb">
+        <?= $this->Html->image($media->file_icon); ?>
 	</div>
 	<div class="gallery-item-infos">
 		<h3><?= __d('media','About this file'); ?></h3>
@@ -15,8 +19,9 @@
 			<div class="details">
 				<span class="file-title"><strong><?= basename($media->file); ?></strong></span>
 				<?php if($media->file_type == 'pic'): ?>
-				<span class="file-dimension"><?= $sizes[0].' x '.$sizes[1]; ?></span>
-				<!--<a class="edit-file" href="#"><?= __d('media','Modify picture'); ?></a>-->
+                    <span class="file-size"><?= $this->Number->toReadableSize(filesize(WWW_ROOT.trim($media->file, '/'))); ?></span>
+				    <span class="file-dimension"><?= $sizes[0].' x '.$sizes[1]; ?></span>
+                    <?= $this->Html->link(__d('media','Modify picture'), ['action' => 'edit', $media->id], ['class' => 'edit-file']) ?>
 				<?php endif; ?>
 				<?= $this->Html->link(__d('media','Delete definitively'), ['action'=>'delete',$media->id], ['class'=>'delete red']); ?>
 			</div>

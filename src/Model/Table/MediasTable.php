@@ -2,21 +2,22 @@
 namespace Media\Model\Table;
 
 use Cake\Event\Event;
+use Cake\Log\Log;
 use Cake\Network\Exception\NotImplementedException;
 use Cake\ORM\Entity;
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Inflector;
+use Cake\Utility\Text;
 use Cake\Validation\Validator;
-use Media\Model\Entity\Media;
+use Intervention\Image\Constraint;
+use Intervention\Image\Exception\InvalidArgumentException;
+use Intervention\Image\Exception\MissingDependencyException;
+use Intervention\Image\Exception\NotWritableException;
+use Intervention\Image\ImageManager;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 /**
  * Medias Model
- *
- * @property \Cake\ORM\Association\BelongsTo $Reves
- * @property \Cake\ORM\Association\HasMany $Actions
  */
 class MediasTable extends Table
 {
@@ -31,9 +32,9 @@ class MediasTable extends Table
      */
     public function initialize(array $config)
     {
-        $this->table('medias');
-        $this->displayField('id');
-        $this->primaryKey('id');
+        $this->setTable('medias');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey('id');
     }
 
     /**
@@ -65,18 +66,16 @@ class MediasTable extends Table
      * @param \Cake\ORM\Entity $entity            
      * @param \ArrayObject $options            
      *
-     * @throws Cake\Network\Exception\NotImplementedException
+     * @throws \Cake\Network\Exception\NotImplementedException
      *
      * @return bool
      */
     public function beforeSave(Event $event, Entity $entity, \ArrayObject $options)
     {
-        if (isset($entity->ref)) {
-            $ref = $entity->ref;
-            $table = TableRegistry::get($ref);
-            if (! \in_array('Media', $table->behaviors()->loaded())) {
-                throw new NotImplementedException(__d('media', "The model '{0}' doesn't have a 'Media' Behavior", $ref));
-            }
+        $table = TableRegistry::get($entity->ref);
+        if (\is_array($table->medias['resize'])) {
+	        $this->resizeImage($entity->file, $table->medias['resize']);
+	        return true;
         }
         if (isset($options['file']) && is_array($options['file']) && isset($entity->ref)) {
             $table = TableRegistry::get($entity->ref);
@@ -89,7 +88,7 @@ class MediasTable extends Table
             $pathinfo = \pathinfo($options['file']['name']);
             $extension = \strtolower($pathinfo['extension']) == 'jpeg' ? 'jpg' : \strtolower($pathinfo['extension']);
             
-            $filename = Inflector::slug($pathinfo['filename'], '-');
+            $filename = Text::slug($pathinfo['filename'], '-');
             $search = [
                 '/',
                 '%id',
@@ -106,32 +105,95 @@ class MediasTable extends Table
                 ceil($refId / 100),
                 date('Y'),
                 date('m'),
-                \strtolower(Inflector::slug($filename))
+                \strtolower(Text::slug($filename))
             ];
             $file = \str_replace($search, $replace, $path) . '.' . $extension;
             $this->testDuplicate($file);
             if (! \file_exists(\dirname(WWW_ROOT . $file))) {
                 \mkdir(\dirname(WWW_ROOT . $file), 0777, true);
             }
-            $this->moveUploadedFile($options['file']['tmp_name'], WWW_ROOT . $file);
+            move_uploaded_file($options['file']['tmp_name'], WWW_ROOT . $file);
             @\chmod(WWW_ROOT . $file, 0777);
             $entity->file = '/' . \trim(\str_replace(DS, '/', $file), '/');
         }
         return true;
     }
 
-    /**
-     * Alias for move_uploded_file function
-     *
-     * @param string $filename            
-     * @param string $destination            
-     *
-     * @return bool
-     */
-    protected function moveUploadedFile($filename, $destination)
-    {
-        return \move_uploaded_file($filename, $destination);
-    }
+	/**
+	 * Resize images if enable in behavior options
+	 *
+	 * @param \Cake\Event\Event $event
+	 * @param \Cake\ORM\Entity  $entity
+	 * @param \ArrayObject      $options
+	 *
+	 * @return bool
+	 */
+	public function afterSave(Event $event, Entity $entity, \ArrayObject $options)
+	{
+		$table = TableRegistry::get($entity->ref);
+		if (\is_array($table->medias['resize'])) {
+			$this->resizeImage($entity->file, $table->medias['resize']);
+			return true;
+		}
+		$this->optimizeImage($entity->file);
+		return true;
+	}
+
+	/**
+	 * Resize image according an array of image sizes
+	 *
+	 * @param string $path    path of the image
+	 * @param array  $options resize options
+	 *
+	 * @return bool
+	 */
+	private function resizeImage($path, array $options)
+	{
+		$path = \trim($path, '/');
+		$pathinfo = \pathinfo(\trim($path, '/'));
+		if (!\in_array($pathinfo['extension'], ['jpg', 'jpeg', 'gif', 'png'])) {
+			return false;
+		}
+		$managerConfiguration = [];
+		if (extension_loaded('imagick')) {
+			$managerConfiguration = ['driver' => 'imagick'];
+		}
+		try {
+			$manager = new ImageManager($managerConfiguration);
+			foreach ($options['sizes'] as $size) {
+				$width  = $size['width'] ?? null;
+				$height = $size['height'] ?? null;
+				$crop   = $size['crop'] ?? false;
+				$output = $pathinfo['dirname'] . DS . $pathinfo['filename'] . '_'
+				          . $width . 'x' . $height . '.' . $pathinfo['extension'];
+				if ( ! file_exists( $output ) ) {
+					$image = $manager->make( $path );
+					if ( ! $crop ) {
+						try {
+							$image->resize( $width, $height, function(Constraint $constraint) {
+								$constraint->aspectRatio();
+								$constraint->upsize();
+							} );
+						} catch (InvalidArgumentException $e) {
+							Log::error(__METHOD__ . ' ' . $e->getMessage());
+						}
+					} else {
+						$image->crop( $width, $height );
+					}
+					try {
+						$image->save( $output, $options['quality'] ?? 60 );
+					} catch (NotWritableException $e) {
+						Log::error(__METHOD__ . ' ' . $e->getMessage());
+					}
+					$image->destroy();
+					$this->optimizeImage($output);
+				}
+			}
+		} catch (MissingDependencyException $e) {
+			Log::error(__METHOD__ . ' ' . $e->getMessage());
+		}
+		return true;
+	}
 
     /**
      * Test if file $dir exists.
@@ -142,7 +204,7 @@ class MediasTable extends Table
      *
      * @return string
      */
-    protected function testDuplicate(&$dir, $count = 0)
+    private function testDuplicate(&$dir, $count = 0)
     {
         $file = $dir;
         if ($count > 0) {
@@ -157,6 +219,7 @@ class MediasTable extends Table
             $this->testDuplicate($dir, $count);
         }
     }
+    
 
     /**
      * Validate file before save entity
@@ -172,8 +235,7 @@ class MediasTable extends Table
                 'rule' => function ($data, $provider) {
                     $name = is_array($data) ? $data['file']['name'] : $data;
                     $table = TableRegistry::get($provider['data']['ref']);
-                    $pathinfo = \pathinfo($name);
-                    $extension = \strtolower($pathinfo['extension']) == 'jpeg' ? 'jpg' : \strtolower($pathinfo['extension']);
+                    $extension = (new File($name, false))->ext();
                     // Extensions validation
                     if (! \in_array($extension, $table->medias['extensions'])) {
                         return __d('media', "You don't have the permission to upload this filetype ({0} only)", \implode(', ', $table->medias['extensions']));
@@ -207,7 +269,7 @@ class MediasTable extends Table
                     }
                     // File size validation
                     if ($table->medias['size'] > 0 && \floor($data['file']['size'] / 1024 > $table->medias['size'])) {
-                        $humanSize = $table->medias['size'] > 1024 ? round($table->medias['size'] / 1024, 1) . ' Mo' : $table->medias['size'] . ' Ko';
+                        $humanSize = Number::toReadableSize($table->medias['size']) > 1024 ? round($table->medias['size'] / 1024, 1) . ' Mo' : $table->medias['size'] . ' Ko';
                         return __d('media', "The file size is too big, {0} max", $humanSize);
                     }
                     return true;
@@ -215,5 +277,24 @@ class MediasTable extends Table
             ]
         ]);
         return $validator;
+    }
+
+	/**
+	 * @param string $path path to the file
+	 *
+	 * @return void
+	 */
+	private function optimizeImage( $path ) {
+		$path = \trim($path, '/');
+		$pathinfo = \pathinfo(\trim($path, '/'));
+		if (!\in_array($pathinfo['extension'], ['jpg', 'jpeg', 'gif', 'png'])) {
+			return;
+		}
+		$optimizerChain = OptimizerChainFactory::create();
+		try {
+			$optimizerChain->setTimeout(5)->optimize($path);
+		} catch (\Exception $e) {
+			Log::error(__METHOD__ . ' ' . $e->getMessage());
+		}
     }
 }
