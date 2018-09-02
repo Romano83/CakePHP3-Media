@@ -4,16 +4,14 @@ function initTinymce(config) {
             buttons = buttons.replace('image,','');
         }
         var options = {
-            language: "fr_FR",
-            relative_urls: false,
-            skin: 'lightgray',
+            language: "en_GB",
             height: 500,
             plugins: [
                 "autoresize autolink autosave link lists charmap hr spellchecker",
                 "searchreplace wordcount visualblocks visualchars code media nonbreaking",
                 "contextmenu template textcolor paste"
             ],
-            toolbar1: "bold italic underline strikethrough blockquote bullist numlist alignleft aligncenter alignright alignjustify link unlink image",
+            toolbar1: "bold italic underline strikethrough blockquote | bullist numlist | alignleft aligncenter alignright alignjustify | link unlink | image",
             toolbar2: "styleselect outdent indent removeformat charmap undo redo code",
             toolbar3: "",
             menubar: false,
@@ -26,11 +24,13 @@ function initTinymce(config) {
 
         var requiredOptions = {
             selector: 'textarea.tinymce',
+            skin: 'lightgray',
+            relative_urls: false,
 			plugins : [
 				"gallery"
 			],
             gallery_explorer: $('#explorer').val() + '?editor=tinymce&id=' + $(this).attr('id'),
-            gallery_edit: $('#edit').val() + '?editor=tinymce&id=' + $(this).attr('id'),
+            gallery_edit: $('#edit').val() + '?editor=tinymce&id=' + $(this).attr('id')
 		};
 
         jQuery.extend(options, requiredOptions);

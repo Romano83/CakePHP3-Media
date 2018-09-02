@@ -1,28 +1,28 @@
 <?php use Cake\Routing\Router ; ?>
 <div id="plupload">
 
-	<ul class="tabs">
-		<li id="browse-tab" class="tab-item"><a href="#browse"
-			data-toggle="tab"><?php echo __d('media','Upload a new file'); ?></a></li>
-		<li id="gallery-tab" class="tab-item active"><a href="#gallery"
-			data-toggle="tab"><?= __d('media','Gallery'); ?></a></li>
-	</ul>
+	<div>
+        <ul class="tabs">
+            <li id="browse-tab" class="tab-item <?= count($medias)==0?'active':'' ?>"><a href="#browse"><?= __d('media','Upload a new file'); ?></a></li>
+            <li id="gallery-tab" class="tab-item <?= count($medias)>0?'active':'' ?>"><a href="#gallery"><?= __d('media','Gallery'); ?></a></li>
+        </ul>
 
-	<div class="tab-content">
-		<div id="browse" class="tab-pane browse">
-			<span><?php echo __d('media',"Drop your files to upload"); ?></span>
-		</div>
-		<div id="gallery" class="tab-pane gallery active in">
-			<?php foreach ($medias as $media):?>
-				<?php require('media.ctp'); ?>
-			<?php endforeach ?>
-			<div class="cb"></div>
-		</div>
-	</div>
+        <div class="tab-content">
+            <div id="browse" class="tab-pane browse <?= count($medias)==0?'active in':'' ?>">
+                <span><?= __d('media',"Drop your files to upload"); ?></span>
+            </div>
+            <div id="gallery" class="tab-pane gallery <?= count($medias)>0?'active in':'' ?>">
+                <?php foreach ($medias as $media):?>
+                    <?php require('media.ctp'); ?>
+                <?php endforeach ?>
+                <div class="cb"></div>
+            </div>
+        </div>
+    </div>
 
 	<div class="overlay">
 		<div class="borders">
-			<span><?php echo __d('media',"Drop your files to upload"); ?></span>
+			<span><?= __d('media',"Drop your files to upload"); ?></span>
 		</div>
 	</div>
 
@@ -52,11 +52,8 @@
 	</div>
 </div>
 
-
-
 <?= $this->Html->script('/media/js/underscore.min.js', ['block' => 'mediaScriptBottom']); ?>
 <?= $this->Html->script('/media/js/dropzone.js', ['block' => 'mediaScriptBottom']); ?>
-<?= $this->Html->script('/media/js/tab.js', ['block' => 'mediaScriptBottom']); ?>
 <?= $this->Html->script('/media/js/modal.js', ['block' => 'mediaScriptBottom']); ?>
 <?= $this->Html->scriptStart(['block' => 'mediaScriptBottom']); ?>
 
@@ -138,16 +135,16 @@
 		items: '.gallery-item',
 		handle: '.gallery-item-thumb',
 		update: function(event, ui) {
-    	var order = $(this).sortable("toArray", {attribute: "data-id"});
-    	var ids = {};
-    	for(var i in order){
-    		ids[order[i]] = i;
-    	}
-    	$loader.stop().fadeIn();
-    	$.post('<?= $this->Url->build(['action' => 'order']); ?>', {Media: ids}, function(data){
-    		$loader.stop().fadeOut();
-    	});
-    }
+            var order = $(this).sortable("toArray", {attribute: "data-id"});
+            var ids = {};
+            for(var i in order){
+                ids[order[i]] = i;
+            }
+            $loader.stop().fadeIn();
+            $.post('<?= $this->Url->build(['action' => 'order']); ?>', {Media: ids}, function(data){
+                $loader.stop().fadeOut();
+            });
+        }
 	});
 
 	$('.gallery').disableSelection();
