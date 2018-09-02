@@ -92,15 +92,18 @@ class MediaHelper extends Helper
 	 */
     public function image($image, $options = [])
     {
-        $width  = isset($options['width']) ? $options['width'] : null;
-        $height = isset($options['height']) ? $options['height'] : null;
-        if ($width && $height) {
-            $pathinfo = \pathinfo($image);
-            $newImg   = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '_'
-                        . $width . 'x' . $height . '.' . $pathinfo['extension'];
-            if (\file_exists($newImg)) {
-                $image = $newImg;
-            }
+        $options = \array_merge([
+            'label' => false,
+            'style' => 'width:100%;height:500px',
+            'rows' => 160,
+            'type' => 'textarea',
+            'class' => "wysiwyg $editor"
+        ], $options);
+        $html = $this->Form->input($fieldName, $options);
+        if (isset($refId) && ! $this->explorer) {
+            $html .= '<input type="hidden" id="explorer" value="' . $this->Url->build('/media/medias/index/' . $ref . '/' . $refId) . '">';
+            $html .= '<input type="hidden" id="edit" value="' . $this->Url->build('/media/medias/edit/') . '">';
+            $this->explorer = true;
         }
 
         return $this->Html->image($image, $options);
@@ -116,7 +119,7 @@ class MediaHelper extends Helper
      */
     public function iframe($ref, $refId)
     {
-        return '<iframe src="' . $this->Url->build("/media/medias/index/$ref/$refId") . '" style="width:100%;min-width:600px;" id="medias-' . $ref . '-' . $refId . '"></iframe>';
+        return '<iframe src="' . $this->Url->build("/media/medias/index/$ref/$refId") . '" style="width:100%;" id="medias-' . $ref . '-' . $refId . '"></iframe>';
     }
 
 

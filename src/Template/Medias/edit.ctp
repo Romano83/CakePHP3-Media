@@ -4,7 +4,7 @@
 			<div class="image">
 				<?= $this->Html->image($data['src'], ['class' => 'path']); ?>
 				<div class="actions">
-					<!--<button class="btn btn-default"><?= __d('media', 'Modify picture'); ?></button>-->
+					<button class="btn btn-default"><?= __d('media', 'Modify picture'); ?></button>
 					<?= $this->Html->link(__d('media', 'Replace picture'), ['controller' => 'medias', 'action' => 'index', $data['ref'], $data['ref_id'], '?' => ['editor' => $data['editor']]], ['class' => 'btn btn-default']); ?>
 				</div>
 			</div>
@@ -34,7 +34,7 @@
 						class="btn btn-default <?= $data['class'] == 'alignright' ? 'active' : '' ?>"
 						value="right"><?= __d('media','Right'); ?></button>
 					<button type="button"
-						class="btn btn-default <?= $data['class'] == 'align' || $this->request->query['class'] == '' ? 'active' : '' ?>"
+						class="btn btn-default <?= $data['class'] == 'align' || $this->request->getQuery('class') == '' ? 'active' : '' ?>"
 						value="none"><?= __d('media','None'); ?></button>
 				</div>
 			</div>
@@ -45,6 +45,7 @@
 	<div class="media-footer-inner">
 		<div class="media-footer-secondary"></div>
 		<div class="media-footer-primary">
+            <?= $this->Html->link(__d('media', 'Back'), ['controller' => 'medias', 'action' => 'index', $data['ref'], $data['ref_id'], '?' => ['editor' => $data['editor']]], ['class' => 'btn btn-default']) ?>
 			<a href="#" class="update btn btn-primary btn-media"><?= __d('media',"Update"); ?></a>
 		</div>
 	</div>
@@ -60,13 +61,13 @@
 		$this.addClass('active');
 	});
 
-	<?php if($this->request->query['editor']): ?>
+	<?php if($this->request->getQuery('editor')): ?>
 		$('.media-footer').on('click', 'a.update', function(e){
 			e.preventDefault();
 			var $this = $(this);
 			var html = createHtmlElement($this);
 			var win = (!window.frameElement && window.dialogArguments) || opener || parent || top;
-			win.update_to_<?= $this->request->query['editor']; ?>(html, window);
+			win.update_to_<?= $this->request->getQuery('editor'); ?>(html, window);
 			return false;
 		});
 
@@ -88,11 +89,11 @@
 				if( $('.caption', item).val() !='' ){
 					var	figStart='<figure> ';
 					var figEnd='</figure> ';
-					var	caption='<figcaption>"' + $('.caption', item).val() + '"</figcaption>'; 
-					var html = figStart + ' <a href="'+$('.path', item).attr('src')+'" class="zoombox"	title="'+$('.title', item).val()+'">' + img + '</a>' + caption + figEnd; 
+					var	caption='<figcaption>' + $('.caption', item).val() + '</figcaption>';
+					var html = figStart + img + caption + figEnd;
 				} else { 
 					if( $('.href', item).val() != '' ){ 
-						html = '<a href="'+$('.path', item).attr('src')+'" class="zoombox"	title="'+$('.title', item).val()+'">' + img + '</a> '; 
+						html = img;
 					} 
 				} 
 			} else { 

@@ -2,9 +2,6 @@
 namespace Media\Model\Table;
 
 use Cake\Event\Event;
-use Cake\Filesystem\File;
-use Cake\Filesystem\Folder;
-use Cake\I18n\Number;
 use Cake\Log\Log;
 use Cake\Network\Exception\NotImplementedException;
 use Cake\ORM\Entity;
@@ -62,49 +59,65 @@ class MediasTable extends Table
         return true;
     }
 
-	/**
-	 * File treatment, upload and return string to save in database
-	 *
-	 * @param \Cake\Event\Event $event
-	 * @param \Cake\ORM\Entity  $entity
-	 * @param \ArrayObject      $options
-	 *
-	 * @return bool
-	 * @throws \Cake\Network\Exception\NotImplementedException
-	 * @throws \ErrorException
-	 */
-	public function beforeSave(Event $event, Entity $entity, \ArrayObject $options)
-	{
-		if (isset($entity->ref)) {
-			$ref = $entity->ref;
-			$table = TableRegistry::get($ref);
-			if (! \in_array('Media', $table->behaviors()->loaded())) {
-				throw new NotImplementedException(__d('media', "The model '{0}' doesn't have a 'Media' Behavior", $ref));
-			}
-		}
-		if (isset($options['file']) && is_array($options['file']) && isset($entity->ref)) {
-			$table = TableRegistry::get($entity->ref);
-			$path = $table->medias['path'];
-
-			$extension = (new File($options['file']['name'], false))->ext();
-			$filename = (new File($options['file']['name'], false))->name();
-
-			$uploadPath = $this->getUploadPath($entity, $path, $filename, $extension);
-			if (!$uploadPath) {
-				throw new \ErrorException(__d('media','Error to get the uploadPath'));
-			}
-
-			$folder = new Folder(WWW_ROOT);
-			$folder->create(WWW_ROOT . dirname($uploadPath));
-
-			$this->testDuplicate($uploadPath);
-
-			if ($this->moveFile($options['file']['tmp_name'], $uploadPath)) {
-				$entity->set('file', $uploadPath);
-			}
-		}
-		return true;
-	}
+    /**
+     * File treatment, upload and return string to save in database
+     *
+     * @param \Cake\Event\Event $event            
+     * @param \Cake\ORM\Entity $entity            
+     * @param \ArrayObject $options            
+     *
+     * @throws \Cake\Network\Exception\NotImplementedException
+     *
+     * @return bool
+     */
+    public function beforeSave(Event $event, Entity $entity, \ArrayObject $options)
+    {
+        $table = TableRegistry::get($entity->ref);
+        if (\is_array($table->medias['resize'])) {
+	        $this->resizeImage($entity->file, $table->medias['resize']);
+	        return true;
+        }
+        if (isset($options['file']) && is_array($options['file']) && isset($entity->ref)) {
+            $table = TableRegistry::get($entity->ref);
+            $refId = $entity->ref_id;
+            if (\method_exists($entity->ref, 'uploadMediasPath')) {
+                $path = $table->uploadMediasPath($refId);
+            } else {
+                $path = $table->medias['path'];
+            }
+            $pathinfo = \pathinfo($options['file']['name']);
+            $extension = \strtolower($pathinfo['extension']) == 'jpeg' ? 'jpg' : \strtolower($pathinfo['extension']);
+            
+            $filename = Text::slug($pathinfo['filename'], '-');
+            $search = [
+                '/',
+                '%id',
+                '%mid',
+                '%cid',
+                '%y',
+                '%m',
+                '%f'
+            ];
+            $replace = [
+                DS,
+                $refId,
+                ceil($refId / 1000),
+                ceil($refId / 100),
+                date('Y'),
+                date('m'),
+                \strtolower(Text::slug($filename))
+            ];
+            $file = \str_replace($search, $replace, $path) . '.' . $extension;
+            $this->testDuplicate($file);
+            if (! \file_exists(\dirname(WWW_ROOT . $file))) {
+                \mkdir(\dirname(WWW_ROOT . $file), 0777, true);
+            }
+            move_uploaded_file($options['file']['tmp_name'], WWW_ROOT . $file);
+            @\chmod(WWW_ROOT . $file, 0777);
+            $entity->file = '/' . \trim(\str_replace(DS, '/', $file), '/');
+        }
+        return true;
+    }
 
 	/**
 	 * Resize images if enable in behavior options
@@ -115,21 +128,19 @@ class MediasTable extends Table
 	 *
 	 * @return bool
 	 */
-    public function afterSave(Event $event, Entity $entity, \ArrayObject $options)
-    {
-        $table = TableRegistry::get($entity->ref);
-        if (\is_array($table->medias['resize'])) {
-	        $this->resizeImage($entity->file, $table->medias['resize']);
-	        return true;
-        }
-        $this->optimizeImage($entity->file);
-        return true;
-    }
+	public function afterSave(Event $event, Entity $entity, \ArrayObject $options)
+	{
+		$table = TableRegistry::get($entity->ref);
+		if (\is_array($table->medias['resize'])) {
+			$this->resizeImage($entity->file, $table->medias['resize']);
+			return true;
+		}
+		$this->optimizeImage($entity->file);
+		return true;
+	}
 
 	/**
-	 * Resize or crop image according an array of sizes with the help of Intervention library
-	 *
-	 * @see https://github.com/Intervention/image Documentation for Intervention/Image
+	 * Resize image according an array of image sizes
 	 *
 	 * @param string $path    path of the image
 	 * @param array  $options resize options
@@ -138,8 +149,8 @@ class MediasTable extends Table
 	 */
 	private function resizeImage($path, array $options)
 	{
-		$path = WWW_ROOT . \trim($path, '/');
-		$pathinfo = \pathinfo($path);
+		$path = \trim($path, '/');
+		$pathinfo = \pathinfo(\trim($path, '/'));
 		if (!\in_array($pathinfo['extension'], ['jpg', 'jpeg', 'gif', 'png'])) {
 			return false;
 		}
@@ -153,7 +164,8 @@ class MediasTable extends Table
 				$width  = $size['width'] ?? null;
 				$height = $size['height'] ?? null;
 				$crop   = $size['crop'] ?? false;
-				$output = $pathinfo['dirname'] . DS . $pathinfo['filename'] . '_' . $width . 'x' . $height . '.' . $pathinfo['extension'];
+				$output = $pathinfo['dirname'] . DS . $pathinfo['filename'] . '_'
+				          . $width . 'x' . $height . '.' . $pathinfo['extension'];
 				if ( ! file_exists( $output ) ) {
 					$image = $manager->make( $path );
 					if ( ! $crop ) {
@@ -183,36 +195,6 @@ class MediasTable extends Table
 		return true;
 	}
 
-	/**
-	 * Optimize image if these optimizers are present in the system.
-	 *
-	 * Optimizers :
-	 *      - JpegOptim
-	 *      - Optipng
-	 *      - Pngquant 2
-	 *      - SVGO
-	 *      - Gifsicle
-	 *
-	 * @see https://github.com/spatie/image-optimizer Documentation for Image Optimizer
-	 *
-	 * @param string $path path to the file
-	 *
-	 * @return void
-	 */
-	private function optimizeImage( $path ) {
-		$path = \trim($path, '/');
-		$pathinfo = \pathinfo(\trim($path, '/'));
-		if (!\in_array($pathinfo['extension'], ['jpg', 'jpeg', 'gif', 'png'])) {
-			return;
-		}
-		$optimizerChain = OptimizerChainFactory::create();
-		try {
-			$optimizerChain->setTimeout(5)->optimize($path);
-		} catch (\Exception $e) {
-			Log::error(__METHOD__ . ' ' . $e->getMessage());
-		}
-	}
-
     /**
      * Test if file $dir exists.
      * If it's the case, add a {n} before the extension
@@ -222,7 +204,7 @@ class MediasTable extends Table
      *
      * @return string
      */
-    protected function testDuplicate(&$dir, $count = 0)
+    private function testDuplicate(&$dir, $count = 0)
     {
         $file = $dir;
         if ($count > 0) {
@@ -298,58 +280,21 @@ class MediasTable extends Table
     }
 
 	/**
-	 * Get the path formatted without its identifiers to upload the file
+	 * @param string $path path to the file
 	 *
-	 * Identifiers :
-	 *      %id     : Id of the entity
-	 *      %cid    : Id of the entity / 100
-	 *      %mid    : Id of the entity / 1000
-	 *      %y      : current year
-	 *      %m      : current month
-	 *      %f      : filename
-	 *
-	 * @param \Cake\ORM\Entity $entity    The entity that is going to save
-	 * @param bool|string      $path      The path to upload the file with its identifiers
-	 * @param bool|string      $filename  The file name
-	 * @param bool|string      $extension The extension of the file
-	 *
-	 * @return bool|string
+	 * @return void
 	 */
-	private function getUploadPath( Entity $entity,  $path = false, $filename = false, $extension = false ) {
-    	if ($path === false || $filename === false || $extension === false) {
-    		return false;
-	    }
-		$filename = Text::slug(strtolower($filename), '-');
-		$identifiers = [
-			'/'    => DS,
-			'%id'  => $entity->id,
-			'%cid' => ceil( $entity->id / 100 ),
-			'%mid' => ceil( $entity->id / 1000 ),
-			'%y'   => date( 'Y' ),
-			'%m'   => date( 'm' ),
-			'%f'   => $filename
-		];
-
-	    return strtr($path, $identifiers) . '.' . $extension;
-	}
-
-	/**
-	 * Move the temporary source file to its destination
-	 *
-	 * @param bool|string $source      The temporary source file to copy
-	 * @param bool|string $destination The destination of the file
-	 *
-	 * @return bool
-	 */
-	private function moveFile( $source = false, $destination = false) {
-    	if ($source === false || $destination === false) {
-    		return false;
-	    }
-	    $file = new File($source, false, 0755);
-
-    	if ($file->copy(WWW_ROOT . $destination)) {
-    		return true;
-	    }
-	    return false;
-	}
+	private function optimizeImage( $path ) {
+		$path = \trim($path, '/');
+		$pathinfo = \pathinfo(\trim($path, '/'));
+		if (!\in_array($pathinfo['extension'], ['jpg', 'jpeg', 'gif', 'png'])) {
+			return;
+		}
+		$optimizerChain = OptimizerChainFactory::create();
+		try {
+			$optimizerChain->setTimeout(5)->optimize($path);
+		} catch (\Exception $e) {
+			Log::error(__METHOD__ . ' ' . $e->getMessage());
+		}
+    }
 }

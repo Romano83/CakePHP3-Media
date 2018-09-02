@@ -3,19 +3,22 @@
 
 	<div>
         <ul class="tabs">
-            <li id="browse-tab" class="tab-item <?= count($medias)==0?'active':'' ?>"><a href="#browse"><?= __d('media','Upload a new file'); ?></a></li>
-            <li id="gallery-tab" class="tab-item <?= count($medias)>0?'active':'' ?>"><a href="#gallery"><?= __d('media','Gallery'); ?></a></li>
+            <li id="browse-tab" class="tab-item <?= count($medias)==0?'active':'' ?>">
+                <a href="#browse" data-toggle="tab"><?php echo __d('media','Upload a new file'); ?></a>
+            </li>
+            <li id="gallery-tab" class="tab-item <?= count($medias)>0?'active':''?>">
+                <a href="#gallery" data-toggle="tab"><?= __d('media','Gallery'); ?></a>
+            </li>
         </ul>
 
         <div class="tab-content">
             <div id="browse" class="tab-pane browse <?= count($medias)==0?'active in':'' ?>">
-                <span><?= __d('media',"Drop your files to upload"); ?></span>
+                <span><?php echo __d('media',"Drop your files to upload"); ?></span>
             </div>
-            <div id="gallery" class="tab-pane gallery <?= count($medias)>0?'active in':'' ?>">
+            <div id="gallery" class="tab-pane gallery <?= count($medias)>0?'active in':''?>">
                 <?php foreach ($medias as $media):?>
                     <?php require('media.ctp'); ?>
                 <?php endforeach ?>
-                <div class="cb"></div>
             </div>
         </div>
     </div>
@@ -35,15 +38,14 @@
 		<i class="fa fa-warning"></i>
 	</div>
 	<div class="alert alert-danger alert-dismissible" role="alert">
-		<button type="button" class="close" data-dismiss="alert"
-			aria-label="Close">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 			<span aria-hidden="true">&times;</span>
 		</button>
-		<div class="modal-body"></div>
+		<div id="modal-body" class="modal-body"></div>
 	</div>
 </div>
 
-<div id="template" class="preview-item" style="display: none">
+<div id="template" class="preview-item template" style="display: none">
 	<div class="preview-item-thumb progress-container">
 		<div class="progress" style="display: none">
 			<div class="progress-bar" role="progressbar" aria-valuenow="60"
@@ -56,6 +58,10 @@
 <?= $this->Html->script('/media/js/dropzone.js', ['block' => 'mediaScriptBottom']); ?>
 <?= $this->Html->script('/media/js/modal.js', ['block' => 'mediaScriptBottom']); ?>
 <?= $this->Html->scriptStart(['block' => 'mediaScriptBottom']); ?>
+
+    var mediaTab = new mediaTab();
+    var mediaupload = new mediaUpload("<?= Router::url(['controller'=>'medias','action'=>'upload',$ref,$refId,'?' => [ "id" => $id, 'editor'=>$editor, ] ]); ?>");
+    mediaupload.deleteItem("<?= __d('media','Do you really want to delete this file ?'); ?>");
 
 (function($){
 	var timer = null, 
@@ -117,19 +123,6 @@
 		},
 	});
 
-	function removeTemplate(selector, element){
-		var templates = selector.find(element);
-		for(i=0; templates.length>i; i++){
-			templates.fadeOut().remove();
-		}
-	}
-
-	$('body').on('click', function(e){
-		if($errorModal.length>0){
-			$errorModal.modal('hide');
-		}
-	});
-
 	// Order
 	$('.gallery').sortable({
 		items: '.gallery-item',
@@ -149,14 +142,6 @@
 
 	$('.gallery').disableSelection();
 
-	// Clicks on items to reveal details
-	$('.gallery').on('click', '.gallery-item-thumb', function(e){
-		e.preventDefault();
-		$item = $(this).parent();
-		$item.addClass('is-active').siblings().removeClass('is-active');
-		$('.gallery-item-infos').hide();
-		$('.gallery-item-infos', $item).show();
-	});
 	$('.gallery').on('submit', 'form', function(e){
 		datas = $(this).serialize();
 		$loader.stop().fadeIn();
@@ -167,15 +152,15 @@
 		return false;
 	});
 	// Delete link
-	$('.gallery').on('click', '.delete', function(e){
-		e.preventDefault();
-		if (confirm("<?= __d('media','Do you really want to delete this file ?'); ?>")) {
-			$this = $(this);
-			$.get($(this).attr('href'), {}, function(){
-				$this.parents('.gallery-item').fadeOut();
-			});
-		}
-	});
+<!--	$('.gallery').on('click', '.delete', function(e){-->
+<!--		e.preventDefault();-->
+<!--		if (confirm("--><?//= __d('media','Do you really want to delete this file ?'); ?><!--")) {-->
+<!--			$this = $(this);-->
+<!--			$.get($(this).attr('href'), {}, function(){-->
+<!--				$this.parents('.gallery-item').fadeOut();-->
+<!--			});-->
+<!--		}-->
+<!--	});-->
 	$('.gallery').on('blur', '.autosubmit', function(){
 		$(this).parents('form').trigger('submit');
 	});
@@ -202,42 +187,41 @@
 			if(type === 'pic') {				
 
 				var img = ' <img src="'+$('.path', item).val()+'"	';
-				if( $('.alt', item).val() !='' ){
+				if( $('.alt', item).val() !=='' ){
 					img +=' alt="' + $('.alt', item).val() + '"';
 				}
-				if( $('.align', item).val() !='none'){
+				if( $('.align', item).val() !=='none'){
 					img +=' class="align'	+ $('.align', item).val() + '"';
 				}
 				img +=' data-id="' + item.data('id')+ '" />'; 
 				
-				if( $('.caption', item).val() != ''){ 
+				if( $('.caption', item).val() !== ''){
 					
 					var figStart = '<figure>'; 
 					var figEnd = '</figure>'; 
-					var caption = '<figcaption>"' + $('.caption', item).val() + '"</figcaption>'; 
+					var caption = '<figcaption>' + $('.caption', item).val() + '</figcaption>';
 					
-					if( $('.href', item).val() != '' ){ 
-						html = figStart + '<a href="'+$('.href', item).val()+'" class="zoombox"	title="'+$('.title', item).val()+'">' + img + '</a>' + caption + figEnd; 
+					if( $('.href', item).val() !== '' ){
+						html = figStart + img + caption + figEnd;
 					} 
 				} else { 
-					if( $('.href', item).val() != '' ){ 
-						html ='<a href="'+$('.href', item).val()+'" class="zoombox"	title="'+$('.title', item).val()+'">' + img + '</a>'; 
+					if( $('.href', item).val() !== '' ){
+						html = img;
 					} 
 				} 
 			} else { 
 				var title = ''; 
-				if($('.title', item).val() == ''){ 
+				if($('.title', item).val() === ''){
 					title = $('.file-title', item).text(); }else{ title = $('.title', item).val();
 				} 
-			html = ' <a href="'+$('.href', item).val()+'" class="zoombox" title="'+title+'">' + title + '</a>';
-		}
+                html = ' <a href="'+$('.href', item).val()+'" class="zoombox" title="'+title+'">' + title + '</a>';
+            }
 			return html;
 		}
 
 	<?php endif; ?>
 
 })(jQuery);
-
 <?= $this->Html->scriptEnd(); ?>
 
 
