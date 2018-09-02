@@ -103,7 +103,7 @@ msgstr "Ajouter un nouveau fichier"
 
 #: Template/Medias/index.ctp:8
 msgid "Gallery"
-msgstr "Gallerie"
+msgstr "Galerie"
 
 #: Template/Medias/index.ctp:13;25
 msgid "Drop your files to upload"

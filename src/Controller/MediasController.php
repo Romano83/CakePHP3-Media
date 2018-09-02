@@ -66,7 +66,7 @@ class MediasController extends AppController
                 'ref' => $ref
             ]
         ])->toArray();
-        $medias = ! empty($medias) ? $medias : null;
+        $medias = ! empty($medias) ? $medias : [];
         $thumbID = false;
         if ($this->$ref->hasField('media_id')) {
             $entity = $this->$ref->get($refId);
